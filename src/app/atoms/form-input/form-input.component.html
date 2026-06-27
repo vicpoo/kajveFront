@@ -1,0 +1,11 @@
+<div class="space-y-2">
+  <label class="block text-sm font-medium text-[#75341A]/90">{{ label }}</label>
+  <input
+    [type]="type"
+    [placeholder]="placeholder"
+    [value]="value"
+    [autocomplete]="autocomplete"
+    (input)="valueChange.emit($any($event.target).value)"
+    class="w-full rounded-3xl border border-[#75341A]/20 bg-white/90 px-4 py-3 text-base text-[#222] outline-none transition duration-200 focus:border-[#75341A] focus:ring-2 focus:ring-[#75341A]/10"
+  />
+</div>

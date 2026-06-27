@@ -1,0 +1,47 @@
+<main class="min-h-screen bg-[#F2E6D8] px-4 py-10 text-[#2a2a2a] sm:px-6">
+  <div class="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-6xl items-center justify-between gap-10 rounded-[40px] bg-[#F2E6D8] p-6 sm:p-10">
+    <section class="flex-1 rounded-[36px] bg-white/85 p-8 shadow-[0_30px_80px_rgba(117,52,26,0.08)] backdrop-blur-xl sm:p-10">
+      <div class="max-w-md mx-auto">
+        <app-brand-logo></app-brand-logo>
+        <div class="mt-10 space-y-7">
+          <app-auth-card title="Iniciar sesión" subtitle="Accede a tu cuenta para continuar">
+            <form class="space-y-6" (submit)="$event.preventDefault(); submit()">
+              <app-form-input
+                label="Correo electrónico"
+                type="email"
+                placeholder="nombre@correo.com"
+                [value]="username()"
+                (valueChange)="username.set($event)"
+                autocomplete="email"
+              ></app-form-input>
+
+              <app-form-input
+                label="Contraseña"
+                type="password"
+                placeholder="********"
+                [value]="password()"
+                (valueChange)="password.set($event)"
+                autocomplete="current-password"
+              ></app-form-input>
+
+              <div class="flex items-center justify-between text-sm text-[#75341A]/90">
+                <a class="hover:text-[#75341A]" href="#">¿Olvidaste tu contraseña?</a>
+                <a class="font-semibold hover:text-[#75341A]" href="#">Registrarse</a>
+              </div>
+
+              <app-primary-button label="Iniciar sesión" type="submit"></app-primary-button>
+            </form>
+          </app-auth-card>
+        </div>
+      </div>
+    </section>
+
+    <aside class="hidden flex-1 flex-col justify-center rounded-[36px] bg-[#75341A] px-8 py-10 text-white shadow-[0_30px_80px_rgba(117,52,26,0.14)] md:flex">
+      <div class="space-y-6">
+        <p class="text-sm uppercase tracking-[0.3em] text-[#F2E6D8]/85">Bienvenido a Kajve</p>
+        <h1 class="text-4xl font-semibold leading-tight">Una experiencia minimalista y cálida para tu proyecto</h1>
+        <p class="max-w-sm text-base leading-7 text-[#F2E6D8]/90">Diseño pensado para enfocarte en lo importante: login simple, limpio y elegante con una paleta cálida.</p>
+      </div>
+    </aside>
+  </div>
+</main>

@@ -1,0 +1,46 @@
+<main class="min-h-screen bg-[#F2E6D8] px-4 py-10 text-[#2b1c14] sm:px-6">
+  <div class="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-6xl flex-col justify-center gap-12 rounded-[40px] bg-[#F2E6D8] p-6 sm:p-10">
+    <section class="mx-auto w-full max-w-5xl rounded-[40px] bg-white/90 p-8 shadow-[0_35px_90px_rgba(117,52,26,0.12)] backdrop-blur-xl sm:p-12">
+      <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div class="space-y-8">
+          <div class="inline-flex items-center gap-3 rounded-full border border-[#75341A]/15 bg-[#75341A]/5 px-4 py-2 text-sm font-semibold text-[#75341A]">
+            <span class="h-2.5 w-2.5 rounded-full bg-[#75341A]"></span> Lanzamiento especial
+          </div>
+
+          <div class="space-y-6">
+            <h1 class="text-4xl font-semibold leading-tight text-[#30180f] sm:text-5xl">Conecta con tus datos en un entorno tranquilo y premium.</h1>
+            <p class="max-w-xl text-base leading-8 text-[#5b3a2b]/90">Kajve es una landing diseñada para presentar tu aplicación con una estética cálida y minimalista. Navega hacia el inicio de sesión para continuar.</p>
+          </div>
+
+          <div class="flex flex-wrap gap-4">
+            <a [routerLink]="['/login']" class="inline-flex items-center justify-center rounded-full bg-[#75341A] px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-[#5e2b16]">Ir a Iniciar sesión</a>
+            <a href="#features" class="inline-flex items-center justify-center rounded-full border border-[#75341A]/20 bg-white px-6 py-3 text-sm font-semibold text-[#75341A] transition duration-200 hover:bg-[#75341A]/5">Ver características</a>
+          </div>
+        </div>
+
+        <div class="rounded-[32px] bg-[#75341A]/5 p-8 text-[#30180f] shadow-[0_25px_70px_rgba(117,52,26,0.08)]">
+          <div class="rounded-[28px] bg-[#F2E6D8] p-6 shadow-inner shadow-[#75341A]/10">
+            <p class="text-sm uppercase tracking-[0.28em] text-[#75341A]/70">Kajve</p>
+            <h2 class="mt-4 text-3xl font-semibold text-[#75341A]">Diseño mobile-first</h2>
+            <p class="mt-4 text-base leading-7 text-[#5b3a2b]/85">Toda la experiencia está optimizada para dispositivos móviles, con un enfoque en claridad, jerarquía y accesibilidad visual.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <article class="rounded-[28px] bg-white/95 p-6 shadow-[0_20px_50px_rgba(117,52,26,0.08)]">
+        <h3 class="text-lg font-semibold text-[#75341A]">Minimalismo cálido</h3>
+        <p class="mt-3 text-sm leading-6 text-[#5b3a2b]/85">Una paleta serena con toques de terracota para mantener la interfaz acogedora y profesional.</p>
+      </article>
+      <article class="rounded-[28px] bg-white/95 p-6 shadow-[0_20px_50px_rgba(117,52,26,0.08)]">
+        <h3 class="text-lg font-semibold text-[#75341A]">Foco en la acción</h3>
+        <p class="mt-3 text-sm leading-6 text-[#5b3a2b]/85">Botones y enlaces claros para guiar al usuario hacia el inicio de sesión sin distracciones.</p>
+      </article>
+      <article class="rounded-[28px] bg-white/95 p-6 shadow-[0_20px_50px_rgba(117,52,26,0.08)]">
+        <h3 class="text-lg font-semibold text-[#75341A]">Diseño moderno</h3>
+        <p class="mt-3 text-sm leading-6 text-[#5b3a2b]/85">Tarjetas y espacios con borde redondeado para una experiencia táctil y elegante.</p>
+      </article>
+    </section>
+  </div>
+</main>
