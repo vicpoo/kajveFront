@@ -1,3 +1,4 @@
+//src/app/pages/login-page/login-page.component.ts
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';

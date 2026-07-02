@@ -1,3 +1,4 @@
+//src/app/molecules/auth-card/auth-card.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

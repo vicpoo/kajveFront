@@ -1,3 +1,4 @@
+//app.ts
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
