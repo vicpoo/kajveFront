@@ -1,12 +1,7 @@
 //src/app/pages/admin-shell/dashboard-page.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface StatCard {
-  label: string;
-  value: string;
-  sublabel: string;
-}
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -14,12 +9,14 @@ interface StatCard {
   imports: [CommonModule],
   templateUrl: './dashboard-page.component.html'
 })
-export class DashboardPageComponent {
-  stats: StatCard[] = [
-    { label: 'Total de usuarios', value: '1,200', sublabel: 'Activos este mes' },
-    { label: 'Usuarios premium', value: '120', sublabel: 'Crecimiento +8%' },
-    { label: 'Total de osiles', value: '90', sublabel: 'Pedidos hoy' }
-  ];
+export class DashboardPageComponent implements OnInit {
+  private dashboardService = inject(DashboardService);
+  
+  stats = signal([
+    { label: 'Total de usuarios', value: '...', sublabel: 'Cargando...' },
+    { label: 'Usuarios premium', value: '...', sublabel: 'Cargando...' },
+    { label: 'Total de sensores', value: '...', sublabel: 'Cargando...' }
+  ]);
 
   chartBars = [
     { label: 'Lun', value: 60 },
@@ -28,4 +25,53 @@ export class DashboardPageComponent {
     { label: 'Jue', value: 85 },
     { label: 'Vie', value: 45 }
   ];
+
+  isLoading = signal(true);
+
+  // Exponer el servicio para el template
+  get dashboardServicePublic() {
+    return this.dashboardService;
+  }
+
+  async ngOnInit() {
+    await this.loadDashboardData();
+  }
+
+  async loadDashboardData() {
+    this.isLoading.set(true);
+    try {
+      const data = await this.dashboardService.loadAllDashboardData();
+      
+      if (data.dashboard) {
+        const totalUsuarios = data.dashboard.total_usuarios;
+        const usuariosActivos = data.dashboard.usuarios_activos;
+        const totalSensores = data.dashboard.total_sensores;
+        const sensoresActivos = data.dashboard.sensores_activos;
+        const totalLotes = data.dashboard.total_lotes;
+        const lotesEnProceso = data.dashboard.lotes_en_proceso;
+
+        this.stats.set([
+          { 
+            label: 'Total de usuarios', 
+            value: totalUsuarios.toString(), 
+            sublabel: `${usuariosActivos} activos` 
+          },
+          { 
+            label: 'Sensores', 
+            value: totalSensores.toString(), 
+            sublabel: `${sensoresActivos} activos` 
+          },
+          { 
+            label: 'Lotes de café', 
+            value: totalLotes.toString(), 
+            sublabel: `${lotesEnProceso} en proceso` 
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error cargando dashboard:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 }

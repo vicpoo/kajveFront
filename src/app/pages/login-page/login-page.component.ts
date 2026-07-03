@@ -1,7 +1,8 @@
 //src/app/pages/login-page/login-page.component.ts
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -10,25 +11,47 @@ import { Router } from '@angular/router';
   templateUrl: './login-page.component.html'
 })
 export class LoginPageComponent {
-  username = signal('');
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  email = signal('');
   password = signal('');
   message = signal('');
   messageType = signal<'info' | 'success' | 'error'>('info');
+  isLoading = signal(false);
 
-  constructor(private router: Router) {}
-
-  submit() {
-    const username = this.username().trim().toLowerCase();
+  async submit() {
+    const email = this.email().trim();
     const password = this.password().trim();
 
-    if (username === 'john' && password === '117') {
-      this.messageType.set('success');
-      this.message.set('Bienvenido, accediendo al panel admin...');
-      setTimeout(() => this.router.navigate(['/admin/dashboard']), 300);
+    if (!email || !password) {
+      this.messageType.set('error');
+      this.message.set('Por favor, ingresa email y contraseña.');
       return;
     }
 
-    this.messageType.set('error');
-    this.message.set('Credenciales incorrectas. Usa john / 117 para acceder.');
+    this.isLoading.set(true);
+    this.messageType.set('info');
+    this.message.set('Iniciando sesión...');
+
+    try {
+      const success = await this.authService.login(email, password);
+      
+      if (success) {
+        this.messageType.set('success');
+        this.message.set('Bienvenido, accediendo al panel...');
+        setTimeout(() => {
+          this.router.navigate(['/admin/dashboard']);
+        }, 300);
+      } else {
+        this.messageType.set('error');
+        this.message.set('Credenciales incorrectas. Por favor, intenta nuevamente.');
+      }
+    } catch (error: any) {
+      this.messageType.set('error');
+      this.message.set(error.message || 'Error al iniciar sesión. Intenta nuevamente.');
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 }

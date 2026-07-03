@@ -28,47 +28,44 @@
 
             <form class="space-y-8" (submit)="$event.preventDefault(); submit()">
               <div class="space-y-3">
-                <label class="block text-sm font-medium text-[#75341A]">Username</label>
+                <label class="block text-sm font-medium text-[#75341A]">Email</label>
                 <input
-                  type="text"
-                  [value]="username()"
-                  (input)="username.set($any($event.target).value)"
-                  placeholder="Nombre de usuario"
+                  type="email"
+                  [value]="email()"
+                  (input)="email.set($any($event.target).value)"
+                  placeholder="usuario@ejemplo.com"
                   class="w-full border-0 border-b-2 border-[#75341A]/30 bg-transparent pb-3 text-base text-[#2a1a14] outline-none placeholder:text-[#75341A]/40 focus:border-[#75341A] focus:ring-0"
+                  [disabled]="isLoading()"
                 />
               </div>
 
               <div class="space-y-3">
-                <label class="block text-sm font-medium text-[#75341A]">Password</label>
+                <label class="block text-sm font-medium text-[#75341A]">Contraseña</label>
                 <input
                   type="password"
                   [value]="password()"
                   (input)="password.set($any($event.target).value)"
                   placeholder="********"
                   class="w-full border-0 border-b-2 border-[#75341A]/30 bg-transparent pb-3 text-base text-[#2a1a14] outline-none placeholder:text-[#75341A]/40 focus:border-[#75341A] focus:ring-0"
+                  [disabled]="isLoading()"
                 />
               </div>
 
               <button
                 type="submit"
-                class="w-full rounded-full bg-[#75341A] px-6 py-3 text-base font-semibold text-[#F2E6D8] transition duration-200 hover:bg-[#5e2b16]"
+                class="w-full rounded-full bg-[#75341A] px-6 py-3 text-base font-semibold text-[#F2E6D8] transition duration-200 hover:bg-[#5e2b16] disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="isLoading()"
               >
-                Inicio de sesión
+                {{ isLoading() ? 'Cargando...' : 'Inicio de sesión' }}
               </button>
             </form>
 
-            <div class="mt-6 rounded-[24px] border border-[#75341A]/10 bg-[#FFF4E6]/90 p-4 text-sm text-[#5E3D2A]">
-              <p class="font-semibold text-[#75341A]">Acceso de administrador</p>
-              <p class="mt-2">Usuario: <span class="font-semibold">john</span></p>
-              <p>Contraseña: <span class="font-semibold">117</span></p>
-            </div>
-
-            <div class="mt-4 rounded-[24px] border border-[#75341A]/10 bg-[#F2E6D8]/90 p-4 text-sm text-[#5E3D2A]" [ngClass]="{
+            <div class="mt-4 rounded-[24px] border border-[#75341A]/10 p-4 text-sm" [ngClass]="{
                 'text-[#1B3924] bg-[#E6F4E8] border-[#B2D9B8]': messageType() === 'success',
                 'text-[#672525] bg-[#F8E2E2] border-[#E1B2B2]': messageType() === 'error',
                 'text-[#5E3D2A] bg-[#FFF4E6] border-[#D7BBA4]': messageType() === 'info'
               }">
-              {{ message() || 'Introduce john / 117 para acceder al admin.' }}
+              {{ message() || 'Ingresa tus credenciales para acceder.' }}
             </div>
 
             <div class="mt-5 text-center text-sm text-[#75341A]/80">
