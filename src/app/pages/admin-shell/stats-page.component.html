@@ -9,7 +9,7 @@
   </div>
 
   <div class="mt-8 grid gap-6 lg:grid-cols-3">
-    <div *ngFor="let stat of stats" class="rounded-[32px] bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/80">
+    <div *ngFor="let stat of stats()" class="rounded-[32px] bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/80">
       <p class="text-sm uppercase tracking-[0.22em] text-[#7A3E24]/80">{{ stat.label }}</p>
       <p class="mt-4 text-3xl font-semibold text-[#3D2212]">{{ stat.value }}</p>
     </div>

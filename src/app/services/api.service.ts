@@ -5,7 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 
 // Interfaces
 import { LoginRequest, LoginResponse, RefreshRequest, RefreshResponse } from '../interfaces/auth.interface';
-import { User, CreateUserRequest, UpdateUserStateRequest, UsersListResponse, AdminUsersListResponse } from '../interfaces/user.interface';
+import { User, CreateUserRequest, UpdateUserRequest, UpdateUserStateRequest, UsersListResponse, AdminUsersListResponse } from '../interfaces/user.interface';
 import { DashboardStats, SecadoStats, SensorStatusResponse } from '../interfaces/dashboard.interface';
 import { Sensor, CreateSensorRequest, UpdateSensorRequest, SensorsListResponse, QRResponse } from '../interfaces/sensor.interface';
 import { PlanSuscripcion, MiSuscripcion, PagoPreferenciaRequest, PagoPreferenciaResponse, PagoHistorial } from '../interfaces/suscripcion.interface';
@@ -24,9 +24,23 @@ export class ApiService {
   private tokenSubject = new BehaviorSubject<string | null>(null);
 
   constructor() {
-    // Cargar tokens desde localStorage al iniciar
-    this.accessToken = localStorage.getItem('access_token');
-    this.refreshTokenValue = localStorage.getItem('refresh_token');
+    this.loadTokensFromStorage();
+  }
+
+  private getStorage(): Storage | null {
+    return typeof window !== 'undefined' ? window.localStorage : null;
+  }
+
+  private loadTokensFromStorage(): void {
+    const storage = this.getStorage();
+
+    if (!storage) {
+      this.tokenSubject.next(null);
+      return;
+    }
+
+    this.accessToken = storage.getItem('access_token');
+    this.refreshTokenValue = storage.getItem('refresh_token');
     this.tokenSubject.next(this.accessToken);
   }
 
@@ -56,16 +70,26 @@ export class ApiService {
   setTokens(accessToken: string, refreshToken: string): void {
     this.accessToken = accessToken;
     this.refreshTokenValue = refreshToken;
-    localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
+
+    const storage = this.getStorage();
+    if (storage) {
+      storage.setItem('access_token', accessToken);
+      storage.setItem('refresh_token', refreshToken);
+    }
+
     this.tokenSubject.next(accessToken);
   }
 
   clearTokens(): void {
     this.accessToken = null;
     this.refreshTokenValue = null;
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+
+    const storage = this.getStorage();
+    if (storage) {
+      storage.removeItem('access_token');
+      storage.removeItem('refresh_token');
+    }
+
     this.tokenSubject.next(null);
   }
 
@@ -76,8 +100,9 @@ export class ApiService {
   // ==================== ERROR HANDLING ====================
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error inesperado';
-    
-    if (error.error instanceof ErrorEvent) {
+
+    const isClientError = typeof ErrorEvent !== 'undefined' && error.error instanceof ErrorEvent;
+    if (isClientError) {
       // Error del lado del cliente
       errorMessage = error.error.message;
     } else if (error.error?.message) {
@@ -127,7 +152,10 @@ export class ApiService {
         tap(response => {
           // El refresh_token se mantiene igual
           this.accessToken = response.access_token;
-          localStorage.setItem('access_token', response.access_token);
+          const storage = this.getStorage();
+          if (storage) {
+            storage.setItem('access_token', response.access_token);
+          }
           this.tokenSubject.next(response.access_token);
         }),
         catchError((error) => {
@@ -216,6 +244,26 @@ export class ApiService {
   updateUserState(id: number, estado: 'activo' | 'inactivo'): Observable<User> {
     const body: UpdateUserStateRequest = { estado };
     return this.http.put<User>(`${this.baseUrl}/admin/usuarios/${id}/estado`, body, {
+      headers: this.getHeaders(true)
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
+  /**
+   * PUT /api/v1/admin/usuarios/{id}
+   * Actualiza datos de un usuario (requiere admin)
+   */
+  updateUser(id: number, userData: UpdateUserRequest): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}/admin/usuarios/${id}`, userData, {
+      headers: this.getHeaders(true)
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
+  /**
+   * DELETE /api/v1/admin/usuarios/{id}
+   * Elimina un usuario (requiere admin)
+   */
+  deleteUser(id: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/admin/usuarios/${id}`, {
       headers: this.getHeaders(true)
     }).pipe(catchError(this.handleError.bind(this)));
   }

@@ -19,6 +19,14 @@ export interface CreateUserRequest {
   telefono?: string;
 }
 
+export interface UpdateUserRequest {
+  email?: string;
+  nombre?: string;
+  rol?: 'administrador' | 'supervisor' | 'productor';
+  password?: string;
+  telefono?: string;
+}
+
 export interface UpdateUserStateRequest {
   estado: 'activo' | 'inactivo';
 }

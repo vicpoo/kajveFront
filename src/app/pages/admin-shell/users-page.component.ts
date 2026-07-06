@@ -1,13 +1,17 @@
 //src/app/pages/admin-shell/users-page.component.ts
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+import { User, CreateUserRequest, UpdateUserRequest } from '../../interfaces/user.interface';
 
 interface UserRow {
+  id: number;
   usuario: string;
   email: string;
   premium: string;
   osiles: string;
+  estado: string;
 }
 
 interface AdminRow {
@@ -15,31 +19,49 @@ interface AdminRow {
   nombre: string;
   rol: string;
   email: string;
+  estado: string;
+}
+
+interface UserFormState {
+  nombre: string;
+  email: string;
+  rol: 'administrador' | 'supervisor' | 'productor';
+  password: string;
+  telefono: string;
 }
 
 @Component({
   selector: 'app-users-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './users-page.component.html'
 })
 export class UsersPageComponent implements OnInit {
   private userService = inject(UserService);
-  
-  // Usamos signals para los datos
+
   private usersSignal = signal<UserRow[]>([]);
   private adminsSignal = signal<AdminRow[]>([]);
-  
-  // Exponemos los valores como computados o directamente con ()
+  private usersDataSignal = signal<User[]>([]);
+
   get users() {
     return this.usersSignal();
   }
-  
+
   get admins() {
     return this.adminsSignal();
   }
-  
+
   isLoading = signal(true);
+  errorMessage = signal('');
+  successMessage = signal('');
+  editingUserId: number | null = null;
+  userForm: UserFormState = {
+    nombre: '',
+    email: '',
+    rol: 'productor',
+    password: '',
+    telefono: ''
+  };
 
   async ngOnInit() {
     await this.loadUsers();
@@ -47,32 +69,138 @@ export class UsersPageComponent implements OnInit {
 
   async loadUsers() {
     this.isLoading.set(true);
+    this.errorMessage.set('');
     try {
       await this.userService.loadAdminUsers();
-      
+
       const userItems = this.userService.users();
-      const userRows: UserRow[] = userItems.map(u => ({
+      this.usersDataSignal.set(userItems);
+
+      const userRows: UserRow[] = userItems.map((u) => ({
+        id: u.id_usuario,
         usuario: u.nombre,
         email: u.email,
-        premium: u.rol === 'administrador' ? 'Admin' : (u.rol === 'productor' ? 'Productor' : 'Supervisor'),
-        osiles: u.total_lotes?.toString() || '0'
+        premium: u.rol === 'administrador' ? 'Admin' : u.rol === 'productor' ? 'Productor' : 'Supervisor',
+        osiles: u.total_lotes?.toString() || '0',
+        estado: u.estado
       }));
       this.usersSignal.set(userRows);
 
       const adminRows: AdminRow[] = userItems
-        .filter(u => u.rol === 'administrador')
-        .map(u => ({
+        .filter((u) => u.rol === 'administrador')
+        .map((u) => ({
           id: `A-${u.id_usuario.toString().padStart(3, '0')}`,
           nombre: u.nombre,
           rol: u.rol,
-          email: u.email
+          email: u.email,
+          estado: u.estado
         }));
       this.adminsSignal.set(adminRows);
-      
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+      this.errorMessage.set('No se pudieron cargar los usuarios.');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  resetForm() {
+    this.editingUserId = null;
+    this.userForm = {
+      nombre: '',
+      email: '',
+      rol: 'productor',
+      password: '',
+      telefono: ''
+    };
+  }
+
+  iniciarCreacion() {
+    this.resetForm();
+    this.errorMessage.set('');
+    this.successMessage.set('');
+  }
+
+  editarUsuario(userId: number) {
+    const selectedUser = this.usersDataSignal().find((u) => u.id_usuario === userId);
+    if (!selectedUser) {
+      return;
+    }
+
+    this.editingUserId = selectedUser.id_usuario;
+    this.userForm = {
+      nombre: selectedUser.nombre,
+      email: selectedUser.email,
+      rol: selectedUser.rol,
+      password: '',
+      telefono: selectedUser.telefono || ''
+    };
+    this.errorMessage.set('');
+    this.successMessage.set('');
+  }
+
+  async guardarUsuario() {
+    if (!this.userForm.nombre.trim() || !this.userForm.email.trim()) {
+      this.errorMessage.set('Completa nombre y correo del usuario.');
+      this.successMessage.set('');
+      return;
+    }
+
+    if (!this.editingUserId && !this.userForm.password.trim()) {
+      this.errorMessage.set('La contraseña es obligatoria para crear un usuario.');
+      this.successMessage.set('');
+      return;
+    }
+
+    try {
+      const payload: CreateUserRequest | UpdateUserRequest = {
+        nombre: this.userForm.nombre.trim(),
+        email: this.userForm.email.trim(),
+        rol: this.userForm.rol,
+        telefono: this.userForm.telefono.trim() || undefined,
+        ...(this.editingUserId ? {} : { password: this.userForm.password.trim() })
+      };
+
+      if (this.editingUserId) {
+        await this.userService.updateUser(this.editingUserId, payload as UpdateUserRequest);
+        this.successMessage.set('Usuario actualizado correctamente.');
+      } else {
+        await this.userService.createUser(payload as CreateUserRequest);
+        this.successMessage.set('Usuario creado correctamente.');
+      }
+
+      await this.loadUsers();
+      this.resetForm();
+    } catch (error) {
+      console.error('Error guardando usuario:', error);
+      this.errorMessage.set('No se pudo guardar el usuario.');
+    }
+  }
+
+  async eliminarUsuario(userId: number) {
+    const confirmed = window.confirm('¿Deseas eliminar este usuario?');
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await this.userService.deleteUser(userId);
+      this.successMessage.set('Usuario eliminado correctamente.');
+      await this.loadUsers();
+    } catch (error) {
+      console.error('Error eliminando usuario:', error);
+      this.errorMessage.set('No se pudo eliminar el usuario.');
+    }
+  }
+
+  async cambiarEstado(userId: number, estado: 'activo' | 'inactivo') {
+    try {
+      await this.userService.updateUserState(userId, estado);
+      this.successMessage.set(`Usuario ${estado === 'activo' ? 'activado' : 'desactivado'}.`);
+      await this.loadUsers();
+    } catch (error) {
+      console.error('Error cambiando estado:', error);
+      this.errorMessage.set('No se pudo actualizar el estado del usuario.');
     }
   }
 }

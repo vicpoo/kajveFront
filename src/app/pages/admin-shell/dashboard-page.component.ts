@@ -11,11 +11,11 @@ import { DashboardService } from '../../services/dashboard.service';
 })
 export class DashboardPageComponent implements OnInit {
   private dashboardService = inject(DashboardService);
-  
+
   stats = signal([
     { label: 'Total de usuarios', value: '...', sublabel: 'Cargando...' },
-    { label: 'Usuarios premium', value: '...', sublabel: 'Cargando...' },
-    { label: 'Total de sensores', value: '...', sublabel: 'Cargando...' }
+    { label: 'Sensores', value: '...', sublabel: 'Cargando...' },
+    { label: 'Lotes de café', value: '...', sublabel: 'Cargando...' }
   ]);
 
   chartBars = [
@@ -28,7 +28,6 @@ export class DashboardPageComponent implements OnInit {
 
   isLoading = signal(true);
 
-  // Exponer el servicio para el template
   get dashboardServicePublic() {
     return this.dashboardService;
   }
@@ -41,7 +40,7 @@ export class DashboardPageComponent implements OnInit {
     this.isLoading.set(true);
     try {
       const data = await this.dashboardService.loadAllDashboardData();
-      
+
       if (data.dashboard) {
         const totalUsuarios = data.dashboard.total_usuarios;
         const usuariosActivos = data.dashboard.usuarios_activos;
@@ -51,20 +50,20 @@ export class DashboardPageComponent implements OnInit {
         const lotesEnProceso = data.dashboard.lotes_en_proceso;
 
         this.stats.set([
-          { 
-            label: 'Total de usuarios', 
-            value: totalUsuarios.toString(), 
-            sublabel: `${usuariosActivos} activos` 
+          {
+            label: 'Total de usuarios',
+            value: totalUsuarios.toString(),
+            sublabel: `${usuariosActivos} activos`
           },
-          { 
-            label: 'Sensores', 
-            value: totalSensores.toString(), 
-            sublabel: `${sensoresActivos} activos` 
+          {
+            label: 'Sensores',
+            value: totalSensores.toString(),
+            sublabel: `${sensoresActivos} activos`
           },
-          { 
-            label: 'Lotes de café', 
-            value: totalLotes.toString(), 
-            sublabel: `${lotesEnProceso} en proceso` 
+          {
+            label: 'Lotes de café',
+            value: totalLotes.toString(),
+            sublabel: `${lotesEnProceso} en proceso`
           }
         ]);
       }

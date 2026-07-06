@@ -1,7 +1,7 @@
 //src/app/services/user.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
-import { User, CreateUserRequest } from '../interfaces/user.interface';
+import { User, CreateUserRequest, UpdateUserRequest } from '../interfaces/user.interface';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
@@ -61,6 +61,24 @@ export class UserService {
       return await lastValueFrom(this.apiService.createUser(userData));
     } catch (error) {
       console.error('Error creando usuario:', error);
+      throw error;
+    }
+  }
+
+  async updateUser(id: number, userData: UpdateUserRequest): Promise<User> {
+    try {
+      return await lastValueFrom(this.apiService.updateUser(id, userData));
+    } catch (error) {
+      console.error('Error actualizando usuario:', error);
+      throw error;
+    }
+  }
+
+  async deleteUser(id: number): Promise<{ message: string }> {
+    try {
+      return await lastValueFrom(this.apiService.deleteUser(id));
+    } catch (error) {
+      console.error('Error eliminando usuario:', error);
       throw error;
     }
   }

@@ -11,6 +11,10 @@ export class AuthService {
   private apiService = inject(ApiService);
   private router = inject(Router);
 
+  private getStorage(): Storage | null {
+    return typeof window !== 'undefined' ? window.localStorage : null;
+  }
+
   // Estado reactivo
   isAuthenticated = signal(this.apiService.isAuthenticated());
   currentUser = signal<any>(null);
@@ -21,7 +25,8 @@ export class AuthService {
     
     // Si hay token, intentar obtener info del usuario
     if (this.isAuthenticated()) {
-      const userStr = localStorage.getItem('user_data');
+      const storage = this.getStorage();
+      const userStr = storage?.getItem('user_data');
       if (userStr) {
         try {
           this.currentUser.set(JSON.parse(userStr));
@@ -48,7 +53,10 @@ export class AuthService {
           nombre: response.nombre,
           rol: response.rol
         };
-        localStorage.setItem('user_data', JSON.stringify(userData));
+        const storage = this.getStorage();
+        if (storage) {
+          storage.setItem('user_data', JSON.stringify(userData));
+        }
         this.currentUser.set(userData);
         this.isAuthenticated.set(true);
         return true;
@@ -70,7 +78,10 @@ export class AuthService {
       console.error('Error en logout:', error);
     } finally {
       this.apiService.clearTokens();
-      localStorage.removeItem('user_data');
+      const storage = this.getStorage();
+      if (storage) {
+        storage.removeItem('user_data');
+      }
       this.currentUser.set(null);
       this.isAuthenticated.set(false);
       this.router.navigate(['/login']);
