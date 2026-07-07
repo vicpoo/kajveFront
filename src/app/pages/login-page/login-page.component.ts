@@ -1,13 +1,13 @@
-//src/app/pages/login-page/login-page.component.ts
+// login-page.component.ts
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './login-page.component.html'
 })
 export class LoginPageComponent {
