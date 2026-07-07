@@ -1,4 +1,4 @@
-//langing-page.component.ts
+// landing-page.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -10,7 +10,6 @@ import { RouterLink } from '@angular/router';
   templateUrl: './landing-page.component.html'
 })
 export class LandingPageComponent {
-  // Navegación
   scrollTo(sectionId: string): void {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -20,137 +19,37 @@ export class LandingPageComponent {
 
   mobileMenuOpen = false;
 
-  // Datos de características
   features = [
-    {
-      icon: 'sensors',
-      title: 'Sensores IoT',
-      description: 'Monitoreo en tiempo real del secado del café.'
-    },
-    {
-      icon: 'analytics',
-      title: 'IA Predictiva',
-      description: 'Predicción del punto óptimo de secado.'
-    },
-    {
-      icon: 'dashboard',
-      title: 'Dashboard',
-      description: 'Control total desde una interfaz moderna.'
-    },
-    {
-      icon: 'qr_code_scanner',
-      title: 'QR Tracking',
-      description: 'Trazabilidad de cada lote de café.'
-    },
-    {
-      icon: 'cloud',
-      title: 'Cloud Sync',
-      description: 'Datos en la nube en tiempo real.'
-    },
-    {
-      icon: 'security',
-      title: 'Seguridad',
-      description: 'Protección y cifrado de información.'
-    }
+    { icon: '📡', title: 'Sensores IoT', description: 'Monitoreo en tiempo real del secado del café.' },
+    { icon: '🧠', title: 'IA Predictiva', description: 'Predicción del punto óptimo de secado.' },
+    { icon: '📊', title: 'Dashboard', description: 'Control total desde una interfaz moderna.' },
+    { icon: '📱', title: 'QR Tracking', description: 'Trazabilidad de cada lote de café.' },
+    { icon: '☁️', title: 'Cloud Sync', description: 'Datos en la nube en tiempo real.' },
+    { icon: '🔒', title: 'Seguridad', description: 'Protección y cifrado de información.' }
   ];
 
-  // Datos de testimonios
-  testimonials = [
-    {
-      name: 'Productor Café 1',
-      text: 'KAJVE me ayudó a reducir pérdidas en el secado del café.'
-    },
-    {
-      name: 'Cooperativa XYZ',
-      text: 'Ahora monitoreamos todos nuestros lotes en tiempo real.'
-    },
-    {
-      name: 'Ingeniero Agrónomo',
-      text: 'La precisión de la IA es impresionante.'
-    }
-  ];
-
-  // Datos de cómo funciona
   steps = [
-    {
-      icon: 'sensors',
-      title: 'Sensores',
-      description: 'Capturan temperatura, humedad y condiciones del secado en tiempo real.'
-    },
-    {
-      icon: 'dns',
-      title: 'Servidor',
-      description: 'Recibe y almacena los datos de forma segura desde cada lote.'
-    },
-    {
-      icon: 'psychology',
-      title: 'IA',
-      description: 'Analiza el comportamiento del secado y predice el punto óptimo.'
-    },
-    {
-      icon: 'dashboard',
-      title: 'Dashboard',
-      description: 'Muestra recomendaciones y alertas en tiempo real al productor.'
-    }
+    { icon: '🌡️', title: 'Sensores', description: 'Capturan temperatura, humedad y condiciones del secado en tiempo real.' },
+    { icon: '💾', title: 'Servidor', description: 'Recibe y almacena los datos de forma segura desde cada lote.' },
+    { icon: '🤖', title: 'IA', description: 'Analiza el comportamiento del secado y predice el punto óptimo.' },
+    { icon: '📈', title: 'Dashboard', description: 'Muestra recomendaciones y alertas en tiempo real al productor.' }
   ];
 
-  // Datos de precios
-  plans = [
-    {
-      name: 'Gratuito',
-      price: '$0',
-      priceSuffix: '',
-      description: 'Ideal para comenzar',
-      features: ['Hasta 2 lotes', 'Reportes básicos', 'Monitoreo estándar'],
-      buttonText: 'Comenzar',
-      highlighted: false
-    },
-    {
-      name: 'Profesional',
-      price: '$19',
-      priceSuffix: 'por mes',
-      description: 'Más popular',
-      features: ['Lotes ilimitados', 'IA avanzada', 'PDF y Excel', 'Alertas inteligentes'],
-      buttonText: 'Suscribirme',
-      highlighted: true
-    },
-    {
-      name: 'Empresarial',
-      price: 'Personalizado',
-      priceSuffix: '',
-      description: 'Para cooperativas y empresas',
-      features: ['Usuarios ilimitados', 'Panel administrativo', 'Integraciones API', 'Soporte prioritario'],
-      buttonText: 'Contactar',
-      highlighted: false
-    }
+  freemiumFeatures = ['Hasta 2 lotes', 'Reportes básicos', 'Monitoreo estándar'];
+  premiumFeatures = ['Lotes ilimitados', 'IA avanzada', 'PDF y Excel', 'Alertas inteligentes'];
+
+  technologies = [
+    { name: 'Flutter', logo: 'assets/tech/flutter.webp', color: '#02569B' },
+    { name: 'Dart', logo: 'assets/tech/dart.webp', color: '#0175C2' },
+    { name: 'IoT', logo: 'assets/tech/iot.svg', color: '#00A859' },
+    { name: 'Firebase', logo: 'assets/tech/firebase.svg', color: '#FFCA28' },
+    { name: 'ML', logo: 'assets/tech/ml.svg', color: '#FF6F00' },
+    { name: 'Cloud', logo: 'assets/tech/cloud.svg', color: '#4285F4' }
   ];
 
-  // Tecnologías
-  technologies = ['Flutter', 'Dart', 'IoT', 'Firebase', 'Machine Learning', 'Cloud'];
-
-  // Highlights de About
   highlights = [
-    {
-      icon: 'sensors',
-      title: 'Monitoreo continuo',
-      description: 'Datos de temperatura y humedad en tiempo real.'
-    },
-    {
-      icon: 'notifications_active',
-      title: 'Alertas inteligentes',
-      description: 'Detección temprana de riesgos durante el secado.'
-    },
-    {
-      icon: 'psychology',
-      title: 'Predicción con IA',
-      description: 'Estimación del tiempo óptimo de secado para cada lote.'
-    }
-  ];
-
-  // Stats
-  stats = [
-    { value: '500+', label: 'Clientes', icon: 'people' },
-    { value: '98%', label: 'Satisfacción', icon: 'star' },
-    { value: '24/7', label: 'Soporte', icon: 'support_agent' }
+    { icon: '🌱', title: 'Monitoreo continuo', description: 'Datos de temperatura y humedad en tiempo real.' },
+    { icon: '🔔', title: 'Alertas inteligentes', description: 'Detección temprana de riesgos durante el secado.' },
+    { icon: '🎯', title: 'Predicción con IA', description: 'Estimación del tiempo óptimo de secado para cada lote.' }
   ];
 }

@@ -1,22 +1,169 @@
 <!-- landing-page.component.html -->
+<style>
+  /* Estilos para los logos de tecnologías */
+  .tech-logo {
+    transition: all 0.3s ease;
+    border-color: #e5e7eb;
+    position: relative;
+  }
+
+  .tech-logo:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.2);
+  }
+
+  .tech-logo:hover .tech-icon {
+    transform: scale(1.15);
+  }
+
+  /* Tooltip con el nombre de la tecnología */
+  .tech-logo .tech-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1A1A1A;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .tech-logo:hover .tech-tooltip {
+    visibility: visible;
+    opacity: 1;
+    bottom: -40px;
+  }
+
+  /* Color de borde por tecnología en hover */
+  .tech-flutter:hover { border-color: #02569B; }
+  .tech-dart:hover { border-color: #0175C2; }
+  .tech-iot:hover { border-color: #00A859; }
+  .tech-firebase:hover { border-color: #FFCA28; }
+  .tech-ml:hover { border-color: #FF6F00; }
+  .tech-cloud:hover { border-color: #4285F4; }
+
+  /* Animación de entrada suave */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; }
+
+  /* Sombras más pronunciadas en tarjetas */
+  .card-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .card-shadow:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-shadow-lg {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-shadow-lg:hover {
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Iconos de redes sociales en footer */
+  .social-icon {
+    transition: all 0.3s ease;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 20px;
+    text-decoration: none;
+    color: #9CA3AF;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .social-icon:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .social-icon.whatsapp:hover {
+    background: #25D366;
+    color: white;
+    border-color: #25D366;
+  }
+
+  .social-icon.instagram:hover {
+    background: #E4405F;
+    color: white;
+    border-color: #E4405F;
+  }
+
+  .social-icon.facebook:hover {
+    background: #1877F2;
+    color: white;
+    border-color: #1877F2;
+  }
+
+  .social-icon.youtube:hover {
+    background: #FF0000;
+    color: white;
+    border-color: #FF0000;
+  }
+
+  .social-icon.linkedin:hover {
+    background: #0A66C2;
+    color: white;
+    border-color: #0A66C2;
+  }
+</style>
+
 <!-- Navbar -->
-<nav class="bg-white shadow-sm sticky top-0 z-50">
+<nav class="bg-white/80 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-100/50">
   <div class="container mx-auto px-4 sm:px-8">
     <div class="flex items-center justify-between h-20">
-      <!-- Logo -->
-      <div class="text-3xl font-bold text-[#6B3A23]">KAJVE</div>
+      <!-- Logo con icono circular a la izquierda -->
+      <div class="flex items-center gap-3">
+        <img src="assets/logo_kajve.jpeg" alt="KAJVE Logo" class="w-12 h-12 rounded-full object-cover shadow-lg ring-2 ring-[#6B3A23]/10">
+        <div class="text-3xl font-bold text-[#6B3A23] tracking-tight">KAJVE</div>
+      </div>
       
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center space-x-8">
-        <button (click)="scrollTo('hero')" class="font-semibold hover:text-[#6B3A23] transition-colors">Inicio</button>
-        <button (click)="scrollTo('features')" class="font-semibold hover:text-[#6B3A23] transition-colors">Funciones</button>
-        <button (click)="scrollTo('technologies')" class="font-semibold hover:text-[#6B3A23] transition-colors">Tecnología</button>
-        <button (click)="scrollTo('testimonials')" class="font-semibold hover:text-[#6B3A23] transition-colors">Beneficios</button>
-        <a routerLink="/login" class="bg-[#6B3A23] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#5A2E1A] transition-colors">Login</a>
+        <button (click)="scrollTo('hero')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Inicio</button>
+        <button (click)="scrollTo('features')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Funciones</button>
+        <button (click)="scrollTo('technologies')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Tecnología</button>
+        <button (click)="scrollTo('pricing')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Planes</button>
+        <a routerLink="/login" class="bg-[#6B3A23] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#5A2E1A] transition-all shadow-md hover:shadow-lg">Login</a>
       </div>
       
       <!-- Mobile Menu Button -->
-      <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden">
+      <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
         <svg *ngIf="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
@@ -27,80 +174,65 @@
     </div>
     
     <!-- Mobile Menu -->
-    <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-gray-200">
+    <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-gray-200/50">
       <div class="flex flex-col space-y-4">
-        <button (click)="scrollTo('hero'); mobileMenuOpen = false" class="font-semibold hover:text-[#6B3A23] transition-colors">Inicio</button>
-        <button (click)="scrollTo('features'); mobileMenuOpen = false" class="font-semibold hover:text-[#6B3A23] transition-colors">Funciones</button>
-        <button (click)="scrollTo('technologies'); mobileMenuOpen = false" class="font-semibold hover:text-[#6B3A23] transition-colors">Tecnología</button>
-        <button (click)="scrollTo('testimonials'); mobileMenuOpen = false" class="font-semibold hover:text-[#6B3A23] transition-colors">Beneficios</button>
-        <a routerLink="/login" (click)="mobileMenuOpen = false" class="bg-[#6B3A23] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#5A2E1A] transition-colors w-full text-center">Login</a>
+        <button (click)="scrollTo('hero'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Inicio</button>
+        <button (click)="scrollTo('features'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Funciones</button>
+        <button (click)="scrollTo('technologies'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Tecnología</button>
+        <button (click)="scrollTo('pricing'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Planes</button>
+        <a routerLink="/login" (click)="mobileMenuOpen = false" class="bg-[#6B3A23] text-white px-6 py-3 rounded-full font-medium hover:bg-[#5A2E1A] transition-colors w-full text-center">Login</a>
       </div>
     </div>
   </div>
 </nav>
 
 <!-- Main Content -->
-<main class="bg-gray-50">
+<main class="bg-[#FAF8F6]">
   <!-- Hero Section -->
-  <section id="hero" class="min-h-[700px] flex items-center py-10">
-    <div class="container mx-auto px-4 md:px-12">
-      <div class="flex flex-col md:flex-row items-center gap-12">
-        <!-- Hero Text -->
-        <div class="flex-1">
-          <h1 class="text-4xl md:text-6xl font-bold text-[#6B3A23] leading-tight">
-            Sistema inteligente de monitoreo del café
-          </h1>
-          <p class="text-lg md:text-xl mt-6 text-gray-700 leading-relaxed">
-            Optimiza el proceso de secado del café con sensores IoT, inteligencia artificial y monitoreo en tiempo real.
-          </p>
-          <div class="flex flex-wrap gap-4 mt-8">
-            <a routerLink="/order" class="bg-[#6B3A23] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#5A2E1A] transition-colors inline-flex items-center justify-center">
-              Comprar
-            </a>
-            <button class="border-2 border-[#6B3A23] text-[#6B3A23] px-8 py-3 rounded-full font-semibold hover:bg-[#6B3A23] hover:text-white transition-colors">
-              Conocer plataforma
-            </button>
-          </div>
-        </div>
-        
-        <!-- Hero Image -->
-        <div class="flex-1">
-          <div class="bg-[#F5E6D6] rounded-3xl p-8 shadow-xl">
-            <div class="aspect-video bg-gradient-to-br from-[#8B6B4F] to-[#6B3A23] rounded-2xl flex items-center justify-center">
-              <span class="text-white text-xl font-semibold">Dashboard Preview</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <section id="hero" class="min-h-[700px] flex items-center py-10 relative overflow-hidden">
+    <!-- Fondo con imagen y opacidad baja + overlay oscuro -->
+    <div class="absolute inset-0 z-0">
+      <img src="assets/fondo-kajve.jpeg" alt="Coffee background" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-black/40"></div>
     </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="py-12 bg-white">
-    <div class="container mx-auto px-4 md:px-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div *ngFor="let stat of stats" class="bg-white rounded-2xl p-6 shadow-lg text-center border border-gray-100">
-          <div class="text-4xl mb-2">📊</div>
-          <div class="text-3xl font-bold text-[#6B3A23]">{{ stat.value }}</div>
-          <div class="text-gray-600 mt-1">{{ stat.label }}</div>
+    
+    <div class="container mx-auto px-4 md:px-12 relative z-10">
+      <div class="flex flex-col items-center text-center max-w-4xl mx-auto fade-in-up">
+        <h1 class="text-4xl md:text-7xl font-bold text-white leading-tight tracking-tight drop-shadow-lg">
+          Sistema inteligente de monitoreo del café
+        </h1>
+        <p class="text-lg md:text-2xl mt-6 text-white/90 leading-relaxed max-w-2xl drop-shadow-md">
+          Optimiza el proceso de secado del café con sensores IoT, inteligencia artificial y monitoreo en tiempo real.
+        </p>
+        <div class="flex flex-wrap gap-4 mt-8 justify-center">
+          <a routerLink="/order" class="bg-[#6B3A23] text-white px-8 py-3.5 rounded-full font-medium hover:bg-[#5A2E1A] transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5">
+            Comprar
+          </a>
+          <button class="border-2 border-white text-white px-8 py-3.5 rounded-full font-medium hover:bg-white hover:text-[#6B3A23] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            Conocer plataforma
+          </button>
         </div>
       </div>
     </div>
   </section>
 
   <!-- About Section -->
-  <section class="py-16 md:py-24">
+  <section class="py-16 md:py-24 bg-white">
     <div class="container mx-auto px-4 md:px-12">
-      <div class="text-center max-w-3xl mx-auto">
-        <h2 class="text-3xl md:text-5xl font-bold text-[#6B3A23]">¿Qué es KAJVE?</h2>
+      <div class="text-center max-w-3xl mx-auto fade-in-up">
+        <h2 class="text-3xl md:text-5xl font-bold text-[#6B3A23] tracking-tight">¿Qué es KAJVE?</h2>
         <p class="text-lg md:text-xl mt-6 text-gray-700 leading-relaxed">
           KAJVE es una plataforma inteligente diseñada para optimizar el proceso de secado del café mediante sensores IoT, monitoreo en tiempo real y predicciones con inteligencia artificial. Permite a productores y cooperativas tomar decisiones basadas en datos, reduciendo pérdidas y mejorando la calidad del grano.
         </p>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-        <div *ngFor="let highlight of highlights" class="bg-[#F5EDE6] rounded-2xl p-8 border border-[#6B3A23]/20">
-          <div class="text-4xl mb-4">🔬</div>
+        <div *ngFor="let highlight of highlights; let i = index" 
+             class="bg-[#F5EDE6] rounded-2xl p-8 border border-[#6B3A23]/10 transition-all hover:shadow-2xl card-shadow fade-in-up"
+             [class.delay-100]="i === 0"
+             [class.delay-200]="i === 1"
+             [class.delay-300]="i === 2">
+          <div class="text-4xl mb-4">{{ highlight.icon }}</div>
           <h3 class="text-xl font-bold text-[#6B3A23]">{{ highlight.title }}</h3>
           <p class="text-gray-700 mt-3">{{ highlight.description }}</p>
         </div>
@@ -109,19 +241,26 @@
   </section>
 
   <!-- Problem Section -->
-  <section class="py-16 md:py-24 bg-[#1A1A1A] text-white">
-    <div class="container mx-auto px-4 md:px-12 text-center max-w-3xl">
-      <h2 class="text-3xl md:text-4xl font-bold">El problema</h2>
-      <p class="text-lg md:text-xl mt-6 text-gray-300 leading-relaxed">
+  <section class="py-16 md:py-24 relative overflow-hidden">
+    <!-- Fondo con imagen y opacidad baja + overlay oscuro -->
+    <div class="absolute inset-0 z-0">
+      <img src="assets/problema-kajve.jpeg" alt="Coffee problem background" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-black/50"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 md:px-12 text-center max-w-3xl relative z-10 fade-in-up">
+      <div class="text-5xl mb-4">⚠️</div>
+      <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">El problema</h2>
+      <p class="text-lg md:text-xl mt-6 text-white/90 leading-relaxed drop-shadow-md">
         El proceso de secado del café aún se realiza de forma manual en muchas fincas, generando pérdidas, baja calidad y falta de control en tiempo real.
       </p>
     </div>
   </section>
 
   <!-- Solution Section -->
-  <section class="py-16 md:py-24">
-    <div class="container mx-auto px-4 md:px-12 text-center max-w-3xl">
-      <h2 class="text-3xl md:text-4xl font-bold text-[#6B3A23]">La solución</h2>
+  <section class="py-16 md:py-24 bg-white">
+    <div class="container mx-auto px-4 md:px-12 text-center max-w-3xl fade-in-up">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#6B3A23] tracking-tight">La solución</h2>
       <p class="text-lg md:text-xl mt-6 text-gray-700 leading-relaxed">
         KAJVE automatiza el monitoreo del café con sensores, IA y análisis en tiempo real, mejorando la calidad del grano.
       </p>
@@ -131,106 +270,97 @@
   <!-- Features Section -->
   <section id="features" class="py-16 md:py-24 bg-[#F5EDE6]">
     <div class="container mx-auto px-4 md:px-12">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Todo lo que KAJVE puede hacer</h2>
+      <div class="text-center fade-in-up">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23] tracking-tight">Todo lo que KAJVE puede hacer</h2>
+      </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
-        <div *ngFor="let feature of features" class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-          <div class="text-4xl mb-4">⚙️</div>
+        <div *ngFor="let feature of features; let i = index" 
+             class="bg-white rounded-2xl p-8 transition-all duration-300 border border-gray-100/50 hover:border-[#6B3A23]/20 card-shadow hover:shadow-2xl fade-in-up"
+             [class.delay-100]="i === 0 || i === 3"
+             [class.delay-200]="i === 1 || i === 4"
+             [class.delay-300]="i === 2 || i === 5">
+          <div class="text-4xl mb-4">{{ feature.icon }}</div>
           <h3 class="text-xl font-bold text-[#6B3A23]">{{ feature.title }}</h3>
-          <p class="text-gray-700 mt-3">{{ feature.description }}</p>
+          <p class="text-gray-700 mt-3 leading-relaxed">{{ feature.description }}</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- How It Works Section -->
-  <section class="py-16 md:py-24 bg-[#F9F5F0]">
+  <section class="py-16 md:py-24 bg-[#FAF8F6]">
     <div class="container mx-auto px-4 md:px-12">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Cómo funciona</h2>
-      <p class="text-center text-lg text-gray-700 mt-4 max-w-2xl mx-auto">
-        Los sensores envían datos al servidor, la IA analiza el comportamiento del secado y KAJVE muestra recomendaciones y alertas en tiempo real.
-      </p>
+      <div class="text-center fade-in-up">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23] tracking-tight">Cómo funciona</h2>
+        <p class="text-center text-lg text-gray-700 mt-4 max-w-2xl mx-auto">
+          Los sensores envían datos al servidor, la IA analiza el comportamiento del secado y KAJVE muestra recomendaciones y alertas en tiempo real.
+        </p>
+      </div>
       
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mt-16">
-        <div *ngFor="let step of steps; let i = index" class="bg-white rounded-2xl p-8 shadow-lg text-center relative">
-          <div class="w-14 h-14 bg-[#6B3A23] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+        <div *ngFor="let step of steps; let i = index" 
+             class="bg-white rounded-2xl p-8 transition-all duration-300 text-center relative border border-gray-100/50 card-shadow hover:shadow-2xl fade-in-up"
+             [class.delay-100]="i === 0"
+             [class.delay-200]="i === 1"
+             [class.delay-300]="i === 2"
+             [class.delay-400]="i === 3">
+          <div class="w-14 h-14 bg-[#6B3A23] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
             {{ i + 1 }}
           </div>
-          <div class="text-4xl mb-4">📡</div>
+          <div class="text-4xl mb-4">{{ step.icon }}</div>
           <h3 class="text-xl font-bold text-[#6B3A23]">{{ step.title }}</h3>
-          <p class="text-gray-700 mt-3 text-sm">{{ step.description }}</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dashboard Preview -->
-  <section class="py-16 md:py-24 bg-white">
-    <div class="container mx-auto px-4 md:px-12">
-      <div class="bg-[#F5EDE6] rounded-3xl p-8 md:p-12 shadow-xl">
-        <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Dashboard en tiempo real</h2>
-        <p class="text-center text-lg text-gray-700 mt-4 max-w-2xl mx-auto">
-          Control total desde una interfaz moderna y fácil de usar.
-        </p>
-        <div class="mt-8 bg-white rounded-2xl p-8 shadow-inner">
-          <div class="aspect-video bg-gradient-to-br from-[#D4C4B5] to-[#B8A492] rounded-xl flex items-center justify-center">
-            <span class="text-gray-700 text-xl font-semibold">Dashboard Preview</span>
-          </div>
+          <p class="text-gray-700 mt-3 text-sm leading-relaxed">{{ step.description }}</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Pricing Section -->
-  <section class="py-16 md:py-24 bg-[#F9F5F0]">
+  <section id="pricing" class="py-16 md:py-24 bg-white">
     <div class="container mx-auto px-4 md:px-12">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Planes para cada etapa</h2>
-      <p class="text-center text-lg text-gray-700 mt-4">Elige el plan que se ajuste al tamaño de tu operación.</p>
+      <div class="text-center fade-in-up">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23] tracking-tight">Planes para cada etapa</h2>
+        <p class="text-center text-lg text-gray-700 mt-4">Elige el plan que se ajuste al tamaño de tu operación.</p>
+      </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-        <div *ngFor="let plan of plans" 
-             class="bg-white rounded-3xl p-8 shadow-lg transition-all hover:shadow-xl"
-             [class.border-2]="plan.highlighted"
-             [class.border-[#6B3A23]]="plan.highlighted"
-             [class.bg-[#6B3A23]]="plan.highlighted"
-             [class.text-white]="plan.highlighted">
-          
-          <div *ngIf="plan.highlighted" class="text-sm font-bold text-[#6B3A23] bg-white/20 rounded-full px-4 py-1 inline-block mb-4">
-            Más popular
-          </div>
-          <div *ngIf="!plan.highlighted" class="text-sm text-gray-500 font-semibold mb-4">
-            {{ plan.description }}
-          </div>
-          
-          <h3 class="text-2xl font-bold" [class.text-white]="plan.highlighted" [class.text-gray-800]="!plan.highlighted">
-            {{ plan.name }}
-          </h3>
-          
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-16">
+        <!-- Freemium -->
+        <div class="bg-[#F5EDE6] rounded-3xl p-8 transition-all duration-300 border border-[#6B3A23]/10 card-shadow-lg hover:shadow-2xl fade-in-up delay-100">
+          <h3 class="text-2xl font-bold text-[#6B3A23]">Freemium</h3>
           <div class="mt-4">
-            <span class="text-4xl font-bold" [class.text-white]="plan.highlighted" [class.text-[#6B3A23]]="!plan.highlighted">
-              {{ plan.price }}
-            </span>
-            <span *ngIf="plan.priceSuffix" class="text-sm" [class.text-white/70]="plan.highlighted" [class.text-gray-500]="!plan.highlighted">
-              {{ plan.priceSuffix }}
-            </span>
+            <span class="text-4xl font-bold text-[#6B3A23]">$0</span>
+            <span class="text-sm text-gray-500 ml-1">siempre gratis</span>
           </div>
-          
           <ul class="mt-8 space-y-4">
-            <li *ngFor="let feature of plan.features" class="flex items-center gap-3">
-              <span class="text-xl">✓</span>
-              <span [class.text-white/90]="plan.highlighted" [class.text-gray-700]="!plan.highlighted">{{ feature }}</span>
+            <li *ngFor="let feature of freemiumFeatures" class="flex items-center gap-3 text-gray-700">
+              <span class="text-[#6B3A23] text-xl">✓</span>
+              {{ feature }}
             </li>
           </ul>
-          
-          <button class="mt-8 w-full py-3 rounded-full font-semibold transition-colors"
-                  [class.bg-white]="plan.highlighted"
-                  [class.text-[#6B3A23]]="plan.highlighted"
-                  [class.border-2]="!plan.highlighted"
-                  [class.border-[#6B3A23]]="!plan.highlighted"
-                  [class.text-[#6B3A23]]="!plan.highlighted"
-                  [class.hover:bg-[#6B3A23]]="!plan.highlighted"
-                  [class.hover:text-white]="!plan.highlighted">
-            {{ plan.buttonText }}
+          <button class="mt-8 w-full py-3.5 rounded-full font-medium border-2 border-[#6B3A23] text-[#6B3A23] hover:bg-[#6B3A23] hover:text-white transition-all shadow-md hover:shadow-lg">
+            Comenzar
+          </button>
+        </div>
+
+        <!-- Premium -->
+        <div class="bg-[#6B3A23] rounded-3xl p-8 transition-all duration-300 text-white relative overflow-hidden card-shadow-lg hover:shadow-2xl fade-in-up delay-200">
+          <div class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl text-sm font-medium">
+            ⭐ Más popular
+          </div>
+          <h3 class="text-2xl font-bold">Premium</h3>
+          <div class="mt-4">
+            <span class="text-4xl font-bold">$19</span>
+            <span class="text-sm text-white/70 ml-1">por mes</span>
+          </div>
+          <ul class="mt-8 space-y-4">
+            <li *ngFor="let feature of premiumFeatures" class="flex items-center gap-3 text-white/90">
+              <span class="text-white text-xl">✓</span>
+              {{ feature }}
+            </li>
+          </ul>
+          <button class="mt-8 w-full py-3.5 rounded-full font-medium bg-white text-[#6B3A23] hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl">
+            Suscribirme
           </button>
         </div>
       </div>
@@ -238,67 +368,22 @@
   </section>
 
   <!-- Technologies Section -->
-  <section id="technologies" class="py-16 md:py-24 bg-white">
+  <section id="technologies" class="py-16 md:py-24 bg-[#FAF8F6]">
     <div class="container mx-auto px-4 md:px-12">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Tecnologías que usamos</h2>
-      
-      <div class="flex flex-wrap justify-center gap-4 mt-12">
-        <span *ngFor="let tech of technologies" 
-              class="px-6 py-3 bg-[#F5EDE6] rounded-full border border-[#6B3A23] text-[#6B3A23] font-semibold">
-          {{ tech }}
-        </span>
+      <div class="text-center fade-in-up">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23] tracking-tight">Tecnologías que usamos</h2>
       </div>
-    </div>
-  </section>
-
-  <!-- Testimonials Section -->
-  <section id="testimonials" class="py-16 md:py-24 bg-[#F9F5F0]">
-    <div class="container mx-auto px-4 md:px-12">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Lo que dicen los usuarios</h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-        <div *ngFor="let testimonial of testimonials" class="bg-white rounded-2xl p-8 shadow-lg">
-          <p class="text-lg text-gray-700 leading-relaxed">"{{ testimonial.text }}"</p>
-          <p class="mt-6 font-bold text-[#6B3A23]">- {{ testimonial.name }}</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Subscribe Section -->
-  <section id="subscribe" class="py-16 md:py-24 bg-[#F5EDE6]">
-    <div class="container mx-auto px-4 md:px-12">
-      <div class="max-w-lg mx-auto text-center">
-        <h2 class="text-3xl md:text-5xl font-bold text-[#6B3A23]">Solicita una demostración</h2>
-        
-        <div class="mt-8 space-y-4">
-          <input type="text" placeholder="Nombre" class="w-full px-6 py-4 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6B3A23]">
-          <input type="email" placeholder="Correo" class="w-full px-6 py-4 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6B3A23]">
-          <button class="w-full bg-[#6B3A23] text-white py-4 rounded-2xl font-semibold hover:bg-[#5A2E1A] transition-colors">
-            Enviar solicitud
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ Section -->
-  <section class="py-16 md:py-24 bg-white">
-    <div class="container mx-auto px-4 md:px-12 max-w-3xl">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23]">Preguntas frecuentes</h2>
-      
-      <div class="mt-12 space-y-4">
-        <div class="border border-gray-200 rounded-2xl p-6">
-          <h3 class="font-bold text-lg text-[#6B3A23]">¿Cómo funciona KAJVE?</h3>
-          <p class="text-gray-700 mt-2">KAJVE utiliza sensores IoT para monitorear el proceso de secado del café en tiempo real, enviando datos a la nube donde la IA los analiza y proporciona recomendaciones.</p>
-        </div>
-        <div class="border border-gray-200 rounded-2xl p-6">
-          <h3 class="font-bold text-lg text-[#6B3A23]">¿Qué necesito para comenzar?</h3>
-          <p class="text-gray-700 mt-2">Solo necesitas los sensores IoT y acceso a internet. Nosotros nos encargamos del resto.</p>
-        </div>
-        <div class="border border-gray-200 rounded-2xl p-6">
-          <h3 class="font-bold text-lg text-[#6B3A23]">¿Es seguro?</h3>
-          <p class="text-gray-700 mt-2">Todos los datos están cifrados y protegidos con los más altos estándares de seguridad.</p>
+      <div class="flex flex-wrap justify-center gap-10 mt-12">
+        <div *ngFor="let tech of technologies; let i = index" 
+             class="tech-logo tech-{{ tech.name | lowercase }} group w-24 h-24 rounded-2xl bg-white shadow-md hover:shadow-2xl transition-all duration-300 flex items-center justify-center border-2 border-gray-200 cursor-pointer fade-in-up"
+             [class.delay-100]="i === 0"
+             [class.delay-200]="i === 1"
+             [class.delay-300]="i === 2"
+             [class.delay-400]="i === 3"
+             [class.delay-500]="i === 4 || i === 5">
+          <img [src]="tech.logo" [alt]="tech.name" class="tech-icon w-14 h-14 object-contain transition-all duration-300">
+          <div class="tech-tooltip">{{ tech.name }}</div>
         </div>
       </div>
     </div>
@@ -306,17 +391,62 @@
 
   <!-- Footer -->
   <footer class="bg-[#1A1A1A] text-white py-12">
-    <div class="container mx-auto px-4 md:px-12 text-center">
-      <h2 class="text-3xl font-bold">KAJVE</h2>
-      <p class="text-gray-400 mt-2">Sistema inteligente de monitoreo del café</p>
-      
-      <div class="flex justify-center gap-4 mt-6">
-        <button class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">📘</button>
-        <button class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">📷</button>
-        <button class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">🔗</button>
+    <div class="container mx-auto px-4 md:px-12">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+        <!-- Logo y descripción -->
+        <div class="text-center md:text-left">
+          <div class="flex items-center gap-3 mb-3 justify-center md:justify-start">
+            <img src="assets/logo_kajve.jpeg" alt="KAJVE Logo" class="w-12 h-12 rounded-full object-cover shadow-lg">
+            <h2 class="text-3xl font-bold">KAJVE</h2>
+          </div>
+          <p class="text-gray-400 text-sm max-w-xs">
+            Sistema inteligente de monitoreo del café
+          </p>
+        </div>
+
+        <!-- Redes Sociales -->
+        <div class="text-center">
+          <p class="text-gray-400 text-sm mb-3 font-medium">Síguenos</p>
+          <div class="flex gap-3">
+            <a href="#" class="social-icon whatsapp" aria-label="WhatsApp">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+            <a href="#" class="social-icon instagram" aria-label="Instagram">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="#" class="social-icon facebook" aria-label="Facebook">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="#" class="social-icon youtube" aria-label="YouTube">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <a href="#" class="social-icon linkedin" aria-label="LinkedIn">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="text-center md:text-right">
+          <p class="text-gray-400 text-sm mb-2 font-medium">Contáctanos</p>
+          <div class="flex items-center gap-3 justify-center md:justify-end">
+            <svg class="w-5 h-5 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <a href="tel:+521234567890" class="text-white hover:text-[#25D366] transition-colors text-sm">
+              +52 123 456 7890
+            </a>
+          </div>
+          <div class="flex items-center gap-3 justify-center md:justify-end mt-2">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <a href="mailto:info@kajve.com" class="text-gray-400 hover:text-white transition-colors text-sm">
+              info@kajve.com
+            </a>
+          </div>
+        </div>
       </div>
       
-      <p class="text-gray-500 mt-8 text-sm">© 2026 KAJVE. Todos los derechos reservados.</p>
+      <div class="border-t border-gray-800 mt-8 pt-6 text-center">
+        <p class="text-gray-500 text-sm">© 2026 KAJVE. Todos los derechos reservados.</p>
+      </div>
     </div>
   </footer>
 </main>
