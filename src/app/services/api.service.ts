@@ -1,3 +1,4 @@
+// services/api.service.ts - Completo y corregido
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
@@ -241,19 +242,9 @@ export class ApiService {
    * PUT /api/v1/admin/usuarios/{id}/estado
    * Activa o desactiva un usuario (requiere admin)
    */
-  updateUserState(id: number, estado: 'activo' | 'inactivo'): Observable<User> {
+  updateUserState(id: number, estado: 'activo' | 'inactivo'): Observable<{ message: string; id_usuario: number }> {
     const body: UpdateUserStateRequest = { estado };
-    return this.http.put<User>(`${this.baseUrl}/admin/usuarios/${id}/estado`, body, {
-      headers: this.getHeaders(true)
-    }).pipe(catchError(this.handleError.bind(this)));
-  }
-
-  /**
-   * PUT /api/v1/admin/usuarios/{id}
-   * Actualiza datos de un usuario (requiere admin)
-   */
-  updateUser(id: number, userData: UpdateUserRequest): Observable<User> {
-    return this.http.put<User>(`${this.baseUrl}/admin/usuarios/${id}`, userData, {
+    return this.http.put<{ message: string; id_usuario: number }>(`${this.baseUrl}/admin/usuarios/${id}/estado`, body, {
       headers: this.getHeaders(true)
     }).pipe(catchError(this.handleError.bind(this)));
   }
@@ -262,8 +253,8 @@ export class ApiService {
    * DELETE /api/v1/admin/usuarios/{id}
    * Elimina un usuario (requiere admin)
    */
-  deleteUser(id: number): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.baseUrl}/admin/usuarios/${id}`, {
+  deleteUser(id: number): Observable<{ message: string; id_usuario: number }> {
+    return this.http.delete<{ message: string; id_usuario: number }>(`${this.baseUrl}/admin/usuarios/${id}`, {
       headers: this.getHeaders(true)
     }).pipe(catchError(this.handleError.bind(this)));
   }
@@ -358,6 +349,22 @@ export class ApiService {
     }).pipe(catchError(this.handleError.bind(this)));
   }
 
+
+    // ==================== USUARIOS ENDPOINTS ====================
+
+  /**
+   * PUT /api/v1/admin/usuarios/{id}
+   * Actualiza datos de un usuario (requiere admin)
+   */
+  updateUser(id: number, userData: UpdateUserRequest): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}/admin/usuarios/${id}`, userData, {
+      headers: this.getHeaders(true)
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
+
+  
+
   // ==================== REPORTES ENDPOINTS ====================
 
   /**
@@ -378,11 +385,11 @@ export class ApiService {
   }
 
   /**
-   * POST /api/v1/admin/reportes/generar
+   * POST /api/v1/admin/reportes
    * Genera un nuevo reporte (requiere admin)
    */
   generarReporte(data: GenerarReporteRequest): Observable<Reporte> {
-    return this.http.post<Reporte>(`${this.baseUrl}/admin/reportes/generar`, data, {
+    return this.http.post<Reporte>(`${this.baseUrl}/admin/reportes`, data, {
       headers: this.getHeaders(true)
     }).pipe(catchError(this.handleError.bind(this)));
   }
@@ -482,7 +489,7 @@ export class ApiService {
    */
   healthCheck(): Observable<{ status: string; version: string; environment: string }> {
     return this.http.get<{ status: string; version: string; environment: string }>(
-      `${this.baseUrl.replace('/api/v1', '')}/health`
+      `https://api-web.dnc-ed-denz.shop/health`
     ).pipe(catchError(this.handleError.bind(this)));
   }
 }

@@ -1,3 +1,4 @@
+// services/payment.service.ts - Microservicio local para pagos
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';

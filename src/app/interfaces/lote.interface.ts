@@ -1,3 +1,4 @@
+//lote.interface.ts
 export interface LoteVenta {
   id: number;
   nombre: string;

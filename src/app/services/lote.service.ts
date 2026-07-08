@@ -1,3 +1,4 @@
+// services/lote.service.ts - Microservicio local para lotes
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';

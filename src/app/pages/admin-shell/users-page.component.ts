@@ -1,4 +1,4 @@
-//src/app/pages/admin-shell/users-page.component.ts
+// users-page.component.ts
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -98,7 +98,7 @@ export class UsersPageComponent implements OnInit {
       this.adminsSignal.set(adminRows);
     } catch (error) {
       console.error('Error cargando usuarios:', error);
-      this.errorMessage.set('No se pudieron cargar los usuarios.');
+      this.errorMessage.set('❌ No se pudieron cargar los usuarios.');
     } finally {
       this.isLoading.set(false);
     }
@@ -141,13 +141,13 @@ export class UsersPageComponent implements OnInit {
 
   async guardarUsuario() {
     if (!this.userForm.nombre.trim() || !this.userForm.email.trim()) {
-      this.errorMessage.set('Completa nombre y correo del usuario.');
+      this.errorMessage.set('❌ Completa nombre y correo del usuario.');
       this.successMessage.set('');
       return;
     }
 
     if (!this.editingUserId && !this.userForm.password.trim()) {
-      this.errorMessage.set('La contraseña es obligatoria para crear un usuario.');
+      this.errorMessage.set('❌ La contraseña es obligatoria para crear un usuario.');
       this.successMessage.set('');
       return;
     }
@@ -163,44 +163,44 @@ export class UsersPageComponent implements OnInit {
 
       if (this.editingUserId) {
         await this.userService.updateUser(this.editingUserId, payload as UpdateUserRequest);
-        this.successMessage.set('Usuario actualizado correctamente.');
+        this.successMessage.set('✅ Usuario actualizado correctamente.');
       } else {
         await this.userService.createUser(payload as CreateUserRequest);
-        this.successMessage.set('Usuario creado correctamente.');
+        this.successMessage.set('✅ Usuario creado correctamente.');
       }
 
       await this.loadUsers();
       this.resetForm();
     } catch (error) {
       console.error('Error guardando usuario:', error);
-      this.errorMessage.set('No se pudo guardar el usuario.');
+      this.errorMessage.set('❌ No se pudo guardar el usuario.');
     }
   }
 
   async eliminarUsuario(userId: number) {
-    const confirmed = window.confirm('¿Deseas eliminar este usuario?');
+    const confirmed = window.confirm('⚠️ ¿Deseas eliminar este usuario? Esta acción no se puede deshacer.');
     if (!confirmed) {
       return;
     }
 
     try {
       await this.userService.deleteUser(userId);
-      this.successMessage.set('Usuario eliminado correctamente.');
+      this.successMessage.set('🗑️ Usuario eliminado correctamente.');
       await this.loadUsers();
     } catch (error) {
       console.error('Error eliminando usuario:', error);
-      this.errorMessage.set('No se pudo eliminar el usuario.');
+      this.errorMessage.set('❌ No se pudo eliminar el usuario.');
     }
   }
 
   async cambiarEstado(userId: number, estado: 'activo' | 'inactivo') {
     try {
       await this.userService.updateUserState(userId, estado);
-      this.successMessage.set(`Usuario ${estado === 'activo' ? 'activado' : 'desactivado'}.`);
+      this.successMessage.set(`✅ Usuario ${estado === 'activo' ? 'activado' : 'desactivado'}.`);
       await this.loadUsers();
     } catch (error) {
       console.error('Error cambiando estado:', error);
-      this.errorMessage.set('No se pudo actualizar el estado del usuario.');
+      this.errorMessage.set('❌ No se pudo actualizar el estado del usuario.');
     }
   }
 }

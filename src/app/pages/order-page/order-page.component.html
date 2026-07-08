@@ -1,200 +1,247 @@
-<main class="min-h-screen bg-[#F2E6D8] px-4 py-8 text-[#3D2212] sm:px-6">
-  <div class="mx-auto max-w-6xl rounded-[40px] bg-[#F8EEE2]/95 p-6 shadow-[0_35px_90px_rgba(107,58,35,0.18)] sm:p-10">
-    <div class="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-      <div class="space-y-6">
-        <div class="inline-flex items-center gap-3 rounded-full bg-[#7A3E24]/10 px-4 py-2 text-sm font-semibold text-[#7A3E24]">
-          <span class="h-2.5 w-2.5 rounded-full bg-[#7A3E24]"></span> Pedido Osil
+<!-- order-page.component.html - Estilo Mercado Libre/Amazon con colores café -->
+<!-- Navbar -->
+<nav class="bg-[#6B3A23] shadow-lg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a routerLink="/" class="flex items-center gap-2">
+        <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
+        <span class="text-xl font-bold text-white">KAJVE</span>
+      </a>
+      
+      <!-- Search bar (estilo Amazon/Mercado Libre) -->
+      <div class="hidden md:flex flex-1 max-w-2xl mx-4">
+        <div class="flex w-full">
+          <select class="bg-[#F2E6D8] text-[#3D2212] px-3 py-2 rounded-l-full border-0 text-sm">
+            <option>Todos</option>
+            <option>Osil</option>
+            <option>Café</option>
+          </select>
+          <input type="text" placeholder="Buscar productos..." 
+                 class="flex-1 px-4 py-2 border-0 focus:outline-none text-[#3D2212]">
+          <button class="bg-[#8A5A3E] px-6 py-2 rounded-r-full text-white hover:bg-[#6B452E] transition-colors">
+            🔍
+          </button>
         </div>
+      </div>
+      
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a routerLink="/" class="text-white/80 hover:text-white transition-colors text-sm">Inicio</a>
+        <a routerLink="/login" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all">
+          Iniciar sesión
+        </a>
+      </div>
+      
+      <!-- Mobile Menu Button -->
+      <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/10">
+      <div class="flex flex-col space-y-3">
+        <a routerLink="/" (click)="mobileMenuOpen = false" class="text-white/80 hover:text-white transition-colors">Inicio</a>
+        <a routerLink="/login" (click)="mobileMenuOpen = false" class="bg-white/20 text-white px-4 py-2 rounded-full text-center hover:bg-white/30 transition-all">Iniciar sesión</a>
+      </div>
+    </div>
+  </div>
+</nav>
 
-        <div class="space-y-4 rounded-[32px] bg-[#FFFFFF]/90 p-8 shadow-[0_20px_50px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/80">
-          <h1 class="text-4xl font-semibold text-[#3D2212]">Pide Osil con estilo café.</h1>
-          <p class="text-base leading-7 text-[#5E3D2A]/85">Un formulario cálido y directo que guía al cliente desde la selección hasta el pedido en pocos pasos.</p>
+<main class="min-h-screen bg-[#F5EDE6]">
+  <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <div class="text-sm text-[#7A3E24]/70 mb-4">
+      <span class="hover:text-[#7A3E24] cursor-pointer">Inicio</span>
+      <span class="mx-2">›</span>
+      <span class="text-[#7A3E24]">Comprar Osil</span>
+    </div>
 
-          <div class="grid gap-4 sm:grid-cols-3">
-            <div class="rounded-[24px] bg-[#F2E3D2] p-4 text-sm text-[#5E3D2A]">
-              <p class="font-semibold">Rápido</p>
-              <p class="mt-2">Menos de 3 pasos para pedir.</p>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Sidebar izquierdo - Filtros estilo Mercado Libre -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30 sticky top-24">
+          <h3 class="font-bold text-[#3D2212] text-lg mb-4">Filtrar por</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-[#5E3D2A] mb-2">Disponibilidad</label>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2 text-sm text-[#5E3D2A] cursor-pointer">
+                  <input type="checkbox" checked class="rounded border-[#C9B29B] text-[#7A3E24]"> Todos
+                </label>
+                <label class="flex items-center gap-2 text-sm text-[#5E3D2A] cursor-pointer">
+                  <input type="checkbox" class="rounded border-[#C9B29B] text-[#7A3E24]"> Disponibles
+                </label>
+              </div>
             </div>
-            <div class="rounded-[24px] bg-[#F2E3D2] p-4 text-sm text-[#5E3D2A]">
-              <p class="font-semibold">Premium</p>
-              <p class="mt-2">Estilo de venta elegante para Osil.</p>
+
+            <div>
+              <label class="block text-sm font-medium text-[#5E3D2A] mb-2">Precio</label>
+              <div class="flex items-center gap-2">
+                <input type="number" placeholder="Mín" class="w-full px-3 py-2 rounded-xl border border-[#C9B29B] bg-[#F2E3D2] text-sm">
+                <span class="text-[#5E3D2A]">-</span>
+                <input type="number" placeholder="Máx" class="w-full px-3 py-2 rounded-xl border border-[#C9B29B] bg-[#F2E3D2] text-sm">
+              </div>
             </div>
-            <div class="rounded-[24px] bg-[#F2E3D2] p-4 text-sm text-[#5E3D2A]">
-              <p class="font-semibold">Seguro</p>
-              <p class="mt-2">Datos claros y confianza en el proceso.</p>
-            </div>
+
+            <button class="w-full bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors">
+              Aplicar filtros
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="rounded-[40px] bg-[#FFFFFF]/95 p-8 shadow-[0_20px_80px_rgba(107,58,35,0.14)] border border-[#D7BBA4]/80">
-        <p class="text-sm uppercase tracking-[0.28em] text-[#8A593E]/90">Tu pedido</p>
-        <div class="mt-6 space-y-6">
-          <div class="rounded-[28px] bg-[#F7E8DA] p-6">
-            <h2 class="text-2xl font-semibold text-[#3D2212]">Haz tu pedido</h2>
-            <p class="mt-2 text-sm leading-6 text-[#5E3D2A]/85">Completa el formulario y confirma tu Osil en segundos.</p>
-          </div>
+      <!-- Lista de productos estilo Amazon/Mercado Libre -->
+      <div class="lg:col-span-2">
+        <!-- Header con cantidad de resultados -->
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-sm text-[#5E3D2A]">
+            <span class="font-bold">{{ lotes.filter(l => l.disponible).length }}</span> productos disponibles
+          </p>
+          <select class="px-3 py-2 rounded-xl border border-[#C9B29B] bg-white text-sm text-[#3D2212]">
+            <option>Ordenar por: Recomendados</option>
+            <option>Precio: menor a mayor</option>
+            <option>Precio: mayor a menor</option>
+          </select>
+        </div>
 
-          <div class="grid gap-4 rounded-[28px] bg-[#FAF2E8] p-6 border border-[#E1C9B3]/80">
-            <div class="flex items-center justify-between text-sm text-[#5E3D2A]">
-              <span>Producto</span><strong>Osil</strong>
+        <!-- Grid de productos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div *ngFor="let lote of lotes" 
+               class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-[#D7BBA4]/30 hover:border-[#7A3E24]/30 cursor-pointer"
+               (click)="seleccionarLote(lote)"
+               [class.ring-2]="loteSeleccionadoId === lote.id"
+               [class.ring-[#7A3E24]]="loteSeleccionadoId === lote.id">
+            
+            <!-- Imagen del producto -->
+            <div class="relative h-48 bg-gradient-to-br from-[#F2E3D2] to-[#E8D5C4] flex items-center justify-center">
+              <span class="text-6xl">☕</span>
+              <div *ngIf="!lote.disponible" class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span class="text-white font-bold text-lg bg-red-600 px-4 py-2 rounded-full">Agotado</span>
+              </div>
+              <div *ngIf="loteSeleccionadoId === lote.id" class="absolute top-2 right-2 bg-[#7A3E24] text-white text-xs px-2 py-1 rounded-full">
+                ✓ Seleccionado
+              </div>
             </div>
-            <div class="flex items-center justify-between text-sm text-[#5E3D2A]">
-              <span>Precio</span><strong>$65 MXN</strong>
-            </div>
-            <div class="flex items-center justify-between text-sm text-[#7A3E24]">
-              <span>Envío</span><strong>Incluido</strong>
-            </div>
-          </div>
 
-          <div class="rounded-[28px] bg-white p-6 border border-[#E1C9B3]/80">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-semibold text-[#3D2212]">Selecciona un lote</h3>
-              <span class="text-xs uppercase tracking-[0.2em] text-[#7A3E24]">ID listo para pagar</span>
-            </div>
-            <div class="mt-4 grid gap-3">
-              <button
-                *ngFor="let lote of lotes"
-                type="button"
-                (click)="seleccionarLote(lote)"
-                class="rounded-[24px] border p-4 text-left transition"
-                [class.border-[#7A3E24]]="loteSeleccionadoId === lote.id"
-                [class.bg-[#F7E8DA]]="loteSeleccionadoId === lote.id"
-                [class.border-[#D7BBA4]]="loteSeleccionadoId !== lote.id"
-                [class.bg-[#FFF9F2]]="loteSeleccionadoId !== lote.id"
-              >
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="font-semibold text-[#3D2212]">{{ lote.nombre }}</p>
-                    <p class="mt-1 text-sm text-[#5E3D2A]">{{ lote.descripcion }}</p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-sm font-semibold text-[#7A3E24]">{{ lote.precio | currency:'MXN':'symbol':'1.0-0' }}</p>
-                    <p class="text-xs uppercase tracking-[0.16em]" [class.text-emerald-600]="lote.disponible" [class.text-amber-600]="!lote.disponible">
-                      {{ lote.disponible ? 'Disponible' : 'No disponible' }}
-                    </p>
-                  </div>
+            <!-- Información del producto -->
+            <div class="p-4">
+              <h3 class="font-bold text-[#3D2212] text-lg truncate">{{ lote.nombre }}</h3>
+              <p class="text-sm text-[#5E3D2A] line-clamp-2 h-10">{{ lote.descripcion }}</p>
+              
+              <div class="flex items-center justify-between mt-3">
+                <div>
+                  <span class="text-2xl font-bold text-[#7A3E24]">{{ lote.precio | currency:'MXN':'symbol':'1.0-0' }}</span>
+                  <span *ngIf="lote.disponible" class="text-xs text-emerald-600 ml-2">En stock</span>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-[#7A3E24]">
-                  <span>ID lote: {{ lote.id }}</span>
-                  <span class="font-semibold">Clic para seleccionar</span>
+                <div class="flex items-center gap-1">
+                  <span class="text-yellow-500">★</span>
+                  <span class="text-sm text-[#5E3D2A]">4.5</span>
                 </div>
+              </div>
+
+              <button *ngIf="lote.disponible" 
+                      (click)="$event.stopPropagation(); seleccionarLote(lote)"
+                      class="w-full mt-3 bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors text-sm">
+                {{ loteSeleccionadoId === lote.id ? '✓ Seleccionado' : 'Seleccionar' }}
+              </button>
+              <button *ngIf="!lote.disponible" 
+                      class="w-full mt-3 bg-gray-300 text-gray-500 py-2 rounded-xl font-medium cursor-not-allowed text-sm">
+                No disponible
               </button>
             </div>
           </div>
         </div>
 
-        <form class="mt-8 space-y-6" (ngSubmit)="submitOrder()">
-          <label class="block text-sm font-medium text-[#5E3D2A]">
-            Nombre completo
-            <input
-              type="text"
-              [(ngModel)]="name"
-              name="name"
-              placeholder="Tu nombre"
-              class="mt-3 w-full rounded-3xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-              required
-            />
-          </label>
-
-          <label class="block text-sm font-medium text-[#5E3D2A]">
-            Correo electrónico
-            <input
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              placeholder="tu@email.com"
-              class="mt-3 w-full rounded-3xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-              required
-            />
-          </label>
-
-          <label class="block text-sm font-medium text-[#5E3D2A]">
-            Teléfono
-            <input
-              type="tel"
-              [(ngModel)]="phone"
-              name="phone"
-              placeholder="9611234567"
-              class="mt-3 w-full rounded-3xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-            />
-          </label>
-
-          <label class="block text-sm font-medium text-[#5E3D2A]">
-            País
-            <input
-              type="text"
-              [(ngModel)]="country"
-              name="country"
-              placeholder="MX"
-              class="mt-3 w-full rounded-3xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-            />
-          </label>
-
-          <label class="block text-sm font-medium text-[#5E3D2A]">
-            Cantidad
-            <input
-              type="number"
-              [(ngModel)]="quantity"
-              name="quantity"
-              min="1"
-              class="mt-3 w-full rounded-3xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-            />
-          </label>
-
-          <label class="block text-sm font-medium text-[#5E3D2A]">
-            Notas del pedido
-            <textarea
-              [(ngModel)]="notes"
-              name="notes"
-              rows="4"
-              placeholder="Ejemplo: sin azúcar, entrega express..."
-              class="mt-3 w-full rounded-3xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-            ></textarea>
-          </label>
-
-          <div *ngIf="errorMessage" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {{ errorMessage }}
-          </div>
-          <div *ngIf="successMessage" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            {{ successMessage }}
-          </div>
-
-          <button
-            type="submit"
-            [disabled]="loading"
-            class="inline-flex w-full items-center justify-center rounded-full bg-[#7A3E24] px-6 py-3 text-sm font-semibold text-[#F8EEE2] transition duration-200 hover:bg-[#5F2E19] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {{ loading ? 'Procesando...' : 'Confirmar pedido' }}
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <section class="grid gap-6 lg:grid-cols-2">
-      <div class="rounded-[36px] bg-[#7A3E24]/10 p-8 shadow-[0_24px_60px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/70">
-        <p class="text-sm uppercase tracking-[0.28em] text-[#7A3E24]/80">Beneficios</p>
-        <h2 class="mt-4 text-3xl font-semibold text-[#3D2212]">Ventajas de pedir Osil</h2>
-        <ul class="mt-6 space-y-4 text-sm leading-6 text-[#5E3D2A]/90">
-          <li class="flex gap-3 rounded-[24px] bg-[#F7E8DA] p-4">✅ Pedido rápido en pocos pasos.</li>
-          <li class="flex gap-3 rounded-[24px] bg-[#F7E8DA] p-4">✅ Precio transparente y resumen claro.</li>
-          <li class="flex gap-3 rounded-[24px] bg-[#F7E8DA] p-4">✅ Estética cálida para inspirar confianza.</li>
-        </ul>
-      </div>
-
-      <div class="rounded-[36px] bg-[#FFFFFF]/95 p-8 shadow-[0_24px_60px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/80">
-        <p class="text-sm uppercase tracking-[0.28em] text-[#8A593E]/90">Inspiración visual</p>
-        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-          <div class="rounded-[28px] bg-[#F2E3D2] p-5">
-            <div class="aspect-[4/3] rounded-[24px] bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.32),_transparent_45%)]"></div>
-            <p class="mt-4 text-sm font-semibold text-[#3D2212]">Foto estilo café</p>
-          </div>
-          <div class="rounded-[28px] bg-[#F2E3D2] p-5">
-            <div class="aspect-[4/3] rounded-[24px] bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.28),_transparent_42%)]"></div>
-            <p class="mt-4 text-sm font-semibold text-[#3D2212]">Producto en envase</p>
+        <!-- Resumen de compra fijo en desktop -->
+        <div class="mt-6 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p class="text-sm text-[#5E3D2A]">Producto seleccionado</p>
+              <p class="font-bold text-[#3D2212]">
+                {{ loteSeleccionado ? loteSeleccionado.nombre : 'Ninguno seleccionado' }}
+                <span *ngIf="loteSeleccionado" class="text-[#7A3E24] text-sm font-normal ml-2">
+                  {{ loteSeleccionado.precio | currency:'MXN':'symbol':'1.0-0' }}
+                </span>
+              </p>
+            </div>
+            <button (click)="scrollToForm()" 
+                    [disabled]="!loteSeleccionadoId"
+                    class="bg-[#7A3E24] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#5F2E19] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
+              Comprar ahora
+            </button>
           </div>
         </div>
+
+        <!-- Formulario de compra -->
+        <div id="checkout-form" class="mt-6 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30">
+          <h3 class="font-bold text-[#3D2212] text-lg mb-4">Completa tus datos</h3>
+          
+          <form (ngSubmit)="submitOrder()" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-[#5E3D2A] mb-1">
+                  Nombre completo <span class="text-red-500">*</span>
+                </label>
+                <input type="text" [(ngModel)]="name" name="name" 
+                       class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                       placeholder="Tu nombre" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-[#5E3D2A] mb-1">
+                  Correo electrónico <span class="text-red-500">*</span>
+                </label>
+                <input type="email" [(ngModel)]="email" name="email" 
+                       class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                       placeholder="tu@email.com" required>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Teléfono</label>
+                <input type="tel" [(ngModel)]="phone" name="phone" 
+                       class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                       placeholder="9611234567">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-[#5E3D2A] mb-1">País</label>
+                <input type="text" [(ngModel)]="country" name="country" 
+                       class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                       placeholder="MX">
+              </div>
+            </div>
+
+            <!-- Mensajes -->
+            <div *ngIf="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              ⚠️ {{ errorMessage }}
+            </div>
+            <div *ngIf="successMessage" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              ✅ {{ successMessage }}
+            </div>
+
+            <button type="submit" [disabled]="loading || !loteSeleccionadoId"
+                    class="w-full bg-[#7A3E24] text-white py-4 rounded-xl font-semibold hover:bg-[#5F2E19] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-lg">
+              <span *ngIf="loading" class="flex items-center justify-center gap-2">
+                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Procesando...
+              </span>
+              <span *ngIf="!loading">Confirmar pedido y pagar con Stripe</span>
+            </button>
+
+            <p class="text-center text-xs text-[#5E3D2A]/60">
+              🔒 Tus datos están seguros. El pago se procesa a través de Stripe.
+            </p>
+          </form>
+        </div>
       </div>
-    </section>
+    </div>
   </div>
 </main>

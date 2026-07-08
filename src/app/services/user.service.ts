@@ -1,4 +1,4 @@
-//src/app/services/user.service.ts
+// services/user.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { User, CreateUserRequest, UpdateUserRequest } from '../interfaces/user.interface';
@@ -65,18 +65,40 @@ export class UserService {
     }
   }
 
+  /**
+   * Actualiza un usuario
+   */
   async updateUser(id: number, userData: UpdateUserRequest): Promise<User> {
     try {
-      return await lastValueFrom(this.apiService.updateUser(id, userData));
+      const response = await lastValueFrom(this.apiService.updateUser(id, userData));
+      // Actualizar lista local
+      const users = this.users();
+      const index = users.findIndex(u => u.id_usuario === id);
+      if (index !== -1 && response) {
+        users[index] = response;
+        this.users.set(users);
+      }
+      return response;
     } catch (error) {
       console.error('Error actualizando usuario:', error);
       throw error;
     }
   }
 
-  async deleteUser(id: number): Promise<{ message: string }> {
+  /**
+   * Elimina un usuario (desactiva lógicamente)
+   */
+  async deleteUser(id: number): Promise<{ message: string; id_usuario: number }> {
     try {
-      return await lastValueFrom(this.apiService.deleteUser(id));
+      const response = await lastValueFrom(this.apiService.deleteUser(id));
+      // Actualizar lista local - marcar como inactivo
+      const users = this.users();
+      const index = users.findIndex(u => u.id_usuario === id);
+      if (index !== -1) {
+        users[index].estado = 'inactivo';
+        this.users.set(users);
+      }
+      return response;
     } catch (error) {
       console.error('Error eliminando usuario:', error);
       throw error;
@@ -98,17 +120,19 @@ export class UserService {
   /**
    * Actualiza el estado de un usuario
    */
-  async updateUserState(id: number, estado: 'activo' | 'inactivo'): Promise<User> {
+  async updateUserState(id: number, estado: 'activo' | 'inactivo'): Promise<User | null> {
     try {
       const response = await lastValueFrom(this.apiService.updateUserState(id, estado));
+      // Obtener el usuario actualizado
+      const updatedUser = await this.getUserDetail(id);
       // Actualizar lista local
       const users = this.users();
       const index = users.findIndex(u => u.id_usuario === id);
-      if (index !== -1 && response) {
-        users[index] = response;
+      if (index !== -1 && updatedUser) {
+        users[index] = updatedUser;
         this.users.set(users);
       }
-      return response;
+      return updatedUser;
     } catch (error) {
       console.error('Error actualizando estado de usuario:', error);
       throw error;

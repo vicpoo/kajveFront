@@ -1,48 +1,81 @@
-import { Component, inject, OnInit } from '@angular/core';
+// osiles-page.component.ts
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink, Router } from '@angular/router';
 import { PaymentService } from '../../services/payment.service';
 import { LoteService } from '../../services/lote.service';
+import { AuthService } from '../../services/auth.service';
 import { OrdenConComprador, EstadoOrden } from '../../interfaces/payment.interface';
-import { CrearLoteRequest, LoteVenta } from '../../interfaces/lote.interface';
+import { LoteVenta, CrearLoteRequest } from '../../interfaces/lote.interface';
 
 @Component({
   selector: 'app-osiles-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './osiles-page.component.html'
 })
 export class OsilesPageComponent implements OnInit {
   private paymentService = inject(PaymentService);
   private loteService = inject(LoteService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   orders: OrdenConComprador[] = [];
   lotes: LoteVenta[] = [];
-  loading = false;
-  updatingId: number | null = null;
+  loading = true;
   errorMessage = '';
-  successMessage = '';
-  editingLoteId: number | null = null;
+  updatingId: number | null = null;
 
+  filterEstado = '';
+  filterLote = 0;
+  limit = 50;
+  offset = 0;
+
+  // Modal
+  modalLoteAbierto = false;
+  creandoLote = false;
   nuevoLote: CrearLoteRequest = {
     nombre: '',
     descripcion: '',
-    precio: 6500,
+    precio: 0,
     disponible: true
   };
 
   ngOnInit() {
-    this.loadOrders();
-    this.loadLotes();
+    this.cargarDatos();
   }
 
-  loadOrders() {
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  cargarDatos() {
     this.loading = true;
-    this.errorMessage = '';
-    this.paymentService.listarOrdenes({ limit: 50 }).subscribe({
+    this.loteService.obtenerLotes().subscribe({
+      next: (lotes) => {
+        this.lotes = lotes;
+        this.cargarOrdenes();
+      },
+      error: () => {
+        this.errorMessage = 'No se pudieron cargar los lotes.';
+        this.loading = false;
+      }
+    });
+  }
+
+  cargarOrdenes() {
+    this.paymentService.listarOrdenes({
+      estado: this.filterEstado || undefined,
+      id_lote: this.filterLote || undefined,
+      limit: this.limit,
+      offset: this.offset
+    }).subscribe({
       next: (orders) => {
         this.orders = orders;
         this.loading = false;
+        this.errorMessage = '';
       },
       error: () => {
         this.errorMessage = 'No se pudieron cargar las órdenes.';
@@ -51,90 +84,99 @@ export class OsilesPageComponent implements OnInit {
     });
   }
 
-  loadLotes() {
-    this.loteService.obtenerLotes().subscribe({
-      next: (lotes) => {
-        this.lotes = lotes;
-      },
-      error: () => {
-        this.errorMessage = 'No se pudieron cargar los lotes.';
-      }
-    });
+  aplicarFiltros() {
+    this.offset = 0;
+    this.cargarOrdenes();
   }
 
-  resetLoteForm() {
-    this.editingLoteId = null;
-    this.nuevoLote = { nombre: '', descripcion: '', precio: 6500, disponible: true };
+  cambiarPagina(direccion: number) {
+    this.offset = Math.max(0, this.offset + direccion * this.limit);
+    this.cargarOrdenes();
   }
 
-  editarLote(lote: LoteVenta) {
-    this.editingLoteId = lote.id;
-    this.nuevoLote = {
-      nombre: lote.nombre,
-      descripcion: lote.descripcion,
-      precio: lote.precio,
-      disponible: lote.disponible
+  getEstadoColor(estado: string): string {
+    const colores: Record<string, string> = {
+      'pendiente': 'bg-amber-100 text-amber-800',
+      'pagada': 'bg-emerald-100 text-emerald-800',
+      'cancelada': 'bg-red-100 text-red-800',
+      'reembolsada': 'bg-gray-100 text-gray-800'
     };
-    this.successMessage = '';
+    return colores[estado] || 'bg-gray-100 text-gray-800';
   }
 
-  guardarLote() {
-    if (!this.nuevoLote.nombre.trim() || !this.nuevoLote.descripcion.trim()) {
-      this.errorMessage = 'Completa nombre y descripción del lote.';
-      return;
-    }
-
-    const request = { ...this.nuevoLote };
-    const operation = this.editingLoteId !== null
-      ? this.loteService.actualizarLote(this.editingLoteId, request)
-      : this.loteService.crearLote(request);
-
-    operation.subscribe({
-      next: (lote) => {
-        if (this.editingLoteId !== null) {
-          this.lotes = this.lotes.map((item) => item.id === lote.id ? lote : item);
-        } else {
-          this.lotes.unshift(lote);
-        }
-
-        this.resetLoteForm();
-        this.successMessage = this.editingLoteId !== null ? 'Lote actualizado correctamente.' : 'Lote agregado correctamente.';
-        this.errorMessage = '';
-      },
-      error: () => {
-        this.errorMessage = this.editingLoteId !== null ? 'No se pudo actualizar el lote.' : 'No se pudo crear el lote.';
-      }
-    });
-  }
-
-  eliminarLote(loteId: number) {
-    const confirmed = window.confirm('¿Deseas eliminar este lote?');
-    if (!confirmed) {
-      return;
-    }
-
-    this.loteService.eliminarLote(loteId).subscribe({
-      next: () => {
-        this.lotes = this.lotes.filter((lote) => lote.id !== loteId);
-        this.successMessage = 'Lote eliminado correctamente.';
-        this.errorMessage = '';
-      },
-      error: () => {
-        this.errorMessage = 'No se pudo eliminar el lote.';
-      }
-    });
+  getEstadoLabel(estado: string): string {
+    const labels: Record<string, string> = {
+      'pendiente': 'Pendiente',
+      'pagada': 'Pagada',
+      'cancelada': 'Cancelada',
+      'reembolsada': 'Reembolsada'
+    };
+    return labels[estado] || estado;
   }
 
   actualizarEstado(order: OrdenConComprador, estado: EstadoOrden) {
-    this.updatingId = order.ID;
-    this.paymentService.actualizarEstado(order.ID, estado).subscribe({
+    if (!confirm(`¿Cambiar estado a "${this.getEstadoLabel(estado)}"?`)) return;
+
+    this.updatingId = order.id;
+    this.paymentService.actualizarEstado(order.id, estado).subscribe({
       next: () => {
-        order.Estado = estado;
+        const ordenActualizada = this.orders.find(o => o.id === order.id);
+        if (ordenActualizada) {
+          ordenActualizada.estado = estado;
+        }
         this.updatingId = null;
+        this.cargarOrdenes();
       },
       error: () => {
-        this.errorMessage = 'No se pudo actualizar el estado.';
+        this.errorMessage = 'Error al actualizar el estado.';
         this.updatingId = null;
+      }
+    });
+  }
+
+  getNombreLote(idLote: number): string {
+    const lote = this.lotes.find(l => l.id === idLote);
+    return lote ? lote.nombre : `Lote #${idLote}`;
+  }
+
+  formatearFecha(fecha: string | null): string {
+    if (!fecha) return '—';
+    return new Date(fecha).toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Modal de lote
+  abrirModalLote() {
+    this.nuevoLote = { nombre: '', descripcion: '', precio: 0, disponible: true };
+    this.modalLoteAbierto = true;
+  }
+
+  cerrarModalLote() {
+    this.modalLoteAbierto = false;
+  }
+
+  crearLote() {
+    if (!this.nuevoLote.nombre.trim() || this.nuevoLote.precio <= 0) {
+      this.errorMessage = 'Nombre y precio son obligatorios.';
+      return;
+    }
+
+    this.creandoLote = true;
+    this.loteService.crearLote(this.nuevoLote).subscribe({
+      next: () => {
+        this.creandoLote = false;
+        this.cerrarModalLote();
+        this.cargarDatos();
+        this.errorMessage = '';
+      },
+      error: () => {
+        this.creandoLote = false;
+        this.errorMessage = 'Error al crear el lote.';
       }
     });
   }
