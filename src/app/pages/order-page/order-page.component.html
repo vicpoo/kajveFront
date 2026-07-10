@@ -44,32 +44,9 @@
       ⚠️ {{ errorMessage }}
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Sidebar -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30 sticky top-24">
-          <h3 class="font-bold text-[#3D2212] text-lg mb-4">Filtrar por</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-[#5E3D2A] mb-2">Disponibilidad</label>
-              <div class="space-y-2">
-                <label class="flex items-center gap-2 text-sm text-[#5E3D2A] cursor-pointer">
-                  <input type="checkbox" checked class="rounded border-[#C9B29B] text-[#7A3E24]"> Todos
-                </label>
-                <label class="flex items-center gap-2 text-sm text-[#5E3D2A] cursor-pointer">
-                  <input type="checkbox" class="rounded border-[#C9B29B] text-[#7A3E24]"> Disponibles
-                </label>
-              </div>
-            </div>
-            <button class="w-full bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors">
-              Aplicar filtros
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lista de productos -->
-      <div class="lg:col-span-2">
+    <div class="grid grid-cols-1 gap-6">
+      <!-- Lista de productos - ahora ocupa todo el ancho -->
+      <div>
         <div class="flex items-center justify-between mb-4">
           <p class="text-sm text-[#5E3D2A]">
             <span class="font-bold">{{ productosDisponibles.length }}</span> productos disponibles
@@ -91,7 +68,7 @@
           No hay camas de café disponibles en este momento.
         </div>
 
-        <div *ngIf="!loadingCatalogo && productosDisponibles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div *ngIf="!loadingCatalogo && productosDisponibles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div *ngFor="let producto of productosDisponibles"
                class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-[#D7BBA4]/30 hover:border-[#7A3E24]/30 cursor-pointer"
                (click)="seleccionarProducto(producto)"
