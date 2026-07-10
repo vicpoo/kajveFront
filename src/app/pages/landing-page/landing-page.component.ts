@@ -35,8 +35,19 @@ export class LandingPageComponent {
     { icon: '📈', title: 'Dashboard', description: 'Muestra recomendaciones y alertas en tiempo real al productor.' }
   ];
 
-  freemiumFeatures = ['Hasta 2 lotes', 'Reportes básicos', 'Monitoreo estándar'];
-  premiumFeatures = ['Lotes ilimitados', 'IA avanzada', 'PDF y Excel', 'Alertas inteligentes'];
+  freemiumFeatures = [
+    'Lotes ilimitados',
+    'Monitoreo en tiempo real',
+    'Sensores',
+    'Alertas'
+  ];
+
+  premiumFeatures = [
+    'Todo lo que incluye Freemium',
+    'Predicciones con IA',
+    'Historial de datos',
+    'Reportes en PDF y Excel'
+  ];
 
   technologies = [
     { name: 'Flutter', logo: 'assets/tech/flutter.webp', color: '#02569B' },
