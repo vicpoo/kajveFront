@@ -1,24 +1,23 @@
-//src/app/pages/admin-shell/admin-shell.component.ts
+// src/app/pages/admin-shell/admin-shell.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-shell',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './admin-shell.component.html'
 })
 export class AdminShellComponent {
   private authService = inject(AuthService);
+  private router = inject(Router);
 
-  get userName(): string {
-    const user = this.authService.currentUser();
-    return user?.nombre || 'Admin';
-  }
+  userName = 'Administrador';
 
-  async logout() {
-    await this.authService.logout();
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

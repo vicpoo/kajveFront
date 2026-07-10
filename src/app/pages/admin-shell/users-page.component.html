@@ -11,20 +11,15 @@
     </div>
     <button
       (click)="loadUsers()"
-      class="inline-flex items-center justify-center rounded-full bg-[#75341A] px-5 py-2.5 text-sm font-semibold text-[#F2E6D8] transition duration-200 hover:bg-[#5e2b16] hover:shadow-lg disabled:opacity-50"
+      class="inline-flex items-center justify-center rounded-full bg-[#75341A] px-6 py-3 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
       [disabled]="isLoading()"
     >
-      <span *ngIf="isLoading()" class="inline-block animate-spin mr-2">⟳</span>
+      <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
       {{ isLoading() ? 'Cargando...' : 'Actualizar' }}
     </button>
-  </div>
-
-  <!-- Mensajes -->
-  <div *ngIf="errorMessage()" class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
-    <span></span> {{ errorMessage() }}
-  </div>
-  <div *ngIf="successMessage()" class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
-    <span></span> {{ successMessage() }}
   </div>
 
   <div class="grid gap-6 lg:grid-cols-[1fr_1.5fr]">
@@ -34,44 +29,45 @@
         <span class="text-2xl">{{ editingUserId ? '✏️' : '➕' }}</span>
         <div>
           <h2 class="text-xl font-semibold text-[#3D2212]">{{ editingUserId ? 'Editar usuario' : 'Crear usuario' }}</h2>
+          <p class="text-xs text-[#5E3D2A]/70">{{ editingUserId ? 'Modifica los datos del usuario' : 'Registra un nuevo usuario en el sistema' }}</p>
         </div>
       </div>
 
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">
-            Nombre completo
+            Nombre completo <span class="text-red-500">*</span>
           </label>
           <input 
             [(ngModel)]="userForm.nombre" 
             name="nombreUsuario" 
             type="text" 
             placeholder="Ej: Juan Pérez"
-            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
           />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">
-            Correo electrónico
+            Correo electrónico <span class="text-red-500">*</span>
           </label>
           <input 
             [(ngModel)]="userForm.email" 
             name="emailUsuario" 
             type="email" 
             placeholder="usuario@ejemplo.com"
-            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
           />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">
-            Rol
+            Rol <span class="text-red-500">*</span>
           </label>
           <select 
             [(ngModel)]="userForm.rol" 
             name="rolUsuario" 
-            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none"
+            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer"
           >
             <option value="productor">Productor</option>
             <option value="supervisor">Supervisor</option>
@@ -88,36 +84,36 @@
             name="telefonoUsuario" 
             type="text" 
             placeholder="9611234567"
-            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
           />
         </div>
 
         <div *ngIf="!editingUserId">
           <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">
-            Contraseña
+            Contraseña <span class="text-red-500">*</span>
           </label>
           <input 
             [(ngModel)]="userForm.password" 
             name="passwordUsuario" 
             type="password" 
             placeholder="Mínimo 6 caracteres"
-            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+            class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
           />
         </div>
 
         <div class="flex flex-wrap gap-3 pt-2">
           <button 
             (click)="guardarUsuario()" 
-            class="flex-1 rounded-full bg-[#75341A] px-6 py-3 text-sm font-semibold text-[#F2E6D8] transition duration-200 hover:bg-[#5e2b16] hover:shadow-lg"
+            class="flex-1 rounded-full bg-[#75341A] px-6 py-3.5 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
           >
-            {{ editingUserId ? 'Guardar cambios' : 'Crear usuario' }}
+            <span>{{ editingUserId ? ' Guardar cambios' : ' Crear usuario' }}</span>
           </button>
           <button 
             *ngIf="editingUserId" 
             (click)="iniciarCreacion()" 
-            class="rounded-full border border-[#C9B29B] bg-white px-6 py-3 text-sm font-semibold text-[#7A3E24] transition duration-200 hover:bg-[#F8EEE2]"
+            class="rounded-full border-2 border-[#C9B29B] bg-white px-6 py-3.5 text-sm font-semibold text-[#7A3E24] transition-all duration-300 hover:bg-[#F8EEE2] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
           >
-            Cancelar
+            ❌ Cancelar
           </button>
         </div>
       </div>
@@ -141,7 +137,7 @@
 
         <!-- Lista de usuarios -->
         <div *ngIf="!isLoading()" class="divide-y divide-[#D7BBA4]/40">
-          <div *ngFor="let user of users" class="p-4 hover:bg-[#F8F0E8] transition-colors">
+          <div *ngFor="let user of users" class="p-4 hover:bg-[#F8F0E8] transition-colors duration-200">
             <div class="flex flex-col sm:flex-row sm:items-center gap-3">
               <!-- Avatar y nombre -->
               <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -155,50 +151,49 @@
               </div>
 
               <!-- Rol y estado -->
-              <div class="flex items-center gap-3 flex-wrap">
-                <span class="text-xs px-2 py-1 rounded-full font-medium" 
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs px-3 py-1 rounded-full font-medium transition-all duration-200" 
                       [class.bg-purple-100]="user.premium === 'Admin'"
                       [class.text-purple-700]="user.premium === 'Admin'"
                       [class.bg-blue-100]="user.premium === 'Supervisor'"
                       [class.text-blue-700]="user.premium === 'Supervisor'"
                       [class.bg-green-100]="user.premium === 'Productor'"
                       [class.text-green-700]="user.premium === 'Productor'">
-                  {{ user.premium === 'Admin' ? '' : user.premium === 'Supervisor' ? '' : '' }}
                   {{ user.premium }}
                 </span>
-                <span class="text-xs px-2 py-1 rounded-full font-medium"
+                <span class="text-xs px-3 py-1 rounded-full font-medium transition-all duration-200"
                       [class.bg-emerald-100]="user.estado === 'activo'"
                       [class.text-emerald-700]="user.estado === 'activo'"
                       [class.bg-amber-100]="user.estado !== 'activo'"
                       [class.text-amber-700]="user.estado !== 'activo'">
                   {{ user.estado === 'activo' ? '🟢 Activo' : '🔴 Inactivo' }}
                 </span>
-                <span class="text-xs text-[#5E3D2A] bg-[#F2E3D2] px-2 py-1 rounded-full">
+                <span class="text-xs text-[#5E3D2A] bg-[#F2E3D2] px-3 py-1 rounded-full">
                   📦 {{ user.osiles }} lotes
                 </span>
               </div>
 
-              <!-- Acciones -->
+              <!-- Acciones - Botones estilo redes sociales -->
               <div class="flex items-center gap-1 ml-auto">
                 <button 
                   (click)="editarUsuario(user.id)" 
-                  class="w-8 h-8 rounded-full hover:bg-[#F2E3D2] transition-colors flex items-center justify-center text-[#7A3E24] hover:scale-110"
+                  class="social-icon-edit w-9 h-9 rounded-full transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg"
                   title="Editar usuario">
-                  ✏️
+                  <span class="text-lg">✏️</span>
                 </button>
                 <button 
                   (click)="cambiarEstado(user.id, user.estado === 'activo' ? 'inactivo' : 'activo')" 
-                  class="w-8 h-8 rounded-full hover:bg-[#F2E3D2] transition-colors flex items-center justify-center hover:scale-110"
+                  class="social-icon-state w-9 h-9 rounded-full transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg"
                   [class.text-emerald-600]="user.estado === 'activo'"
                   [class.text-amber-600]="user.estado !== 'activo'"
                   [title]="user.estado === 'activo' ? 'Desactivar usuario' : 'Activar usuario'">
-                  {{ user.estado === 'activo' ? '🔒' : '🔓' }}
+                  <span class="text-lg">{{ user.estado === 'activo' ? '🔒' : '🔓' }}</span>
                 </button>
                 <button 
                   (click)="eliminarUsuario(user.id)" 
-                  class="w-8 h-8 rounded-full hover:bg-red-50 transition-colors flex items-center justify-center text-red-500 hover:scale-110"
+                  class="social-icon-delete w-9 h-9 rounded-full transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg"
                   title="Eliminar usuario">
-                  🗑️
+                  <span class="text-lg">🗑️</span>
                 </button>
               </div>
             </div>
@@ -206,7 +201,7 @@
 
           <!-- Empty state -->
           <div *ngIf="users.length === 0" class="p-8 text-center text-[#5E3D2A]">
-            <p class="text-4xl mb-2"></p>
+            <p class="text-4xl mb-2">📭</p>
             <p>No hay usuarios registrados</p>
           </div>
         </div>
@@ -215,14 +210,13 @@
       <!-- Administradores -->
       <div *ngIf="admins.length > 0" class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)]">
         <div class="flex items-center gap-2 mb-4">
-          <span class="text-2xl"></span>
           <h2 class="text-xl font-semibold text-[#3D2212]">Administradores</h2>
-          <span class="text-sm text-[#5E3D2A] bg-[#F8EEE2] px-2 py-1 rounded-full ml-auto">
+          <span class="text-sm text-[#5E3D2A] bg-[#F8EEE2] px-3 py-1 rounded-full ml-auto">
             {{ admins.length }}
           </span>
         </div>
         <div class="grid gap-2">
-          <div *ngFor="let admin of admins" class="flex items-center gap-3 p-3 rounded-xl bg-[#F8F0E8] hover:bg-[#F2E3D2] transition-colors">
+          <div *ngFor="let admin of admins" class="flex items-center gap-3 p-3 rounded-xl bg-[#F8F0E8] hover:bg-[#F2E3D2] transition-all duration-200">
             <div class="w-8 h-8 rounded-full bg-[#75341A] text-[#F2E6D8] flex items-center justify-center font-bold text-xs flex-shrink-0">
               {{ admin.nombre.charAt(0).toUpperCase() }}
             </div>
@@ -230,12 +224,12 @@
               <p class="font-semibold text-[#3D2212] text-sm truncate">{{ admin.nombre }}</p>
               <p class="text-xs text-[#5E3D2A] truncate">{{ admin.email }}</p>
             </div>
-            <span class="text-xs px-2 py-1 rounded-full font-medium"
+            <span class="text-xs px-3 py-1 rounded-full font-medium transition-all duration-200"
                   [class.bg-emerald-100]="admin.estado === 'activo'"
                   [class.text-emerald-700]="admin.estado === 'activo'"
                   [class.bg-amber-100]="admin.estado !== 'activo'"
                   [class.text-amber-700]="admin.estado !== 'activo'">
-              {{ admin.estado === 'activo' ? '🟢' : '🔴' }}
+              {{ admin.estado === 'activo' ? '🟢 Activo' : '🔴 Inactivo' }}
             </span>
           </div>
         </div>
@@ -243,3 +237,50 @@
     </div>
   </div>
 </section>
+
+<!-- Estilos adicionales para los botones estilo redes sociales -->
+<style>
+  .social-icon-edit {
+    background: rgba(107, 58, 35, 0.08);
+    color: #7A3E24;
+    border: 1px solid rgba(107, 58, 35, 0.15);
+  }
+  
+  .social-icon-edit:hover {
+    background: rgba(107, 58, 35, 0.2);
+    border-color: #7A3E24;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 58, 35, 0.2);
+  }
+
+  .social-icon-state {
+    background: rgba(107, 58, 35, 0.08);
+    border: 1px solid rgba(107, 58, 35, 0.15);
+  }
+  
+  .social-icon-state:hover {
+    background: rgba(107, 58, 35, 0.15);
+    border-color: #7A3E24;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 58, 35, 0.15);
+  }
+
+  .social-icon-delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+  }
+  
+  .social-icon-delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #EF4444;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+  }
+
+  .social-icon-edit:active,
+  .social-icon-state:active,
+  .social-icon-delete:active {
+    transform: scale(0.95);
+  }
+</style>
