@@ -3,45 +3,25 @@
 <nav class="bg-[#6B3A23] shadow-lg sticky top-0 z-50">
   <div class="container mx-auto px-4 sm:px-8">
     <div class="flex items-center justify-between h-16">
-      <!-- Logo -->
       <a routerLink="/" class="flex items-center gap-2">
         <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
         <span class="text-xl font-bold text-white">KAJVE</span>
       </a>
-      
-      <!-- Search bar (estilo Amazon/Mercado Libre) -->
-      <div class="hidden md:flex flex-1 max-w-2xl mx-4">
-        <div class="flex w-full">
-          <select class="bg-[#F2E6D8] text-[#3D2212] px-3 py-2 rounded-l-full border-0 text-sm">
-            <option>Todos</option>
-            <option>Osil</option>
-            <option>Café</option>
-          </select>
-          <input type="text" placeholder="Buscar productos..." 
-                 class="flex-1 px-4 py-2 border-0 focus:outline-none text-[#3D2212]">
-          <button class="bg-[#8A5A3E] px-6 py-2 rounded-r-full text-white hover:bg-[#6B452E] transition-colors">
-            🔍
-          </button>
-        </div>
-      </div>
-      
-      <!-- Desktop Menu -->
+
       <div class="hidden md:flex items-center space-x-6">
         <a routerLink="/" class="text-white/80 hover:text-white transition-colors text-sm">Inicio</a>
         <a routerLink="/login" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all">
           Iniciar sesión
         </a>
       </div>
-      
-      <!-- Mobile Menu Button -->
+
       <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     </div>
-    
-    <!-- Mobile Menu -->
+
     <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/10">
       <div class="flex flex-col space-y-3">
         <a routerLink="/" (click)="mobileMenuOpen = false" class="text-white/80 hover:text-white transition-colors">Inicio</a>
@@ -53,19 +33,22 @@
 
 <main class="min-h-screen bg-[#F5EDE6]">
   <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-    <!-- Breadcrumb -->
     <div class="text-sm text-[#7A3E24]/70 mb-4">
       <span class="hover:text-[#7A3E24] cursor-pointer">Inicio</span>
       <span class="mx-2">›</span>
       <span class="text-[#7A3E24]">Comprar Osil</span>
     </div>
 
+    <!-- Banner de error GLOBAL: arriba de todo, visible de inmediato -->
+    <div *ngIf="errorMessage" class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      ⚠️ {{ errorMessage }}
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Sidebar izquierdo - Filtros estilo Mercado Libre -->
+      <!-- Sidebar -->
       <div class="lg:col-span-1">
         <div class="bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30 sticky top-24">
           <h3 class="font-bold text-[#3D2212] text-lg mb-4">Filtrar por</h3>
-          
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-[#5E3D2A] mb-2">Disponibilidad</label>
@@ -78,16 +61,6 @@
                 </label>
               </div>
             </div>
-
-            <div>
-              <label class="block text-sm font-medium text-[#5E3D2A] mb-2">Precio</label>
-              <div class="flex items-center gap-2">
-                <input type="number" placeholder="Mín" class="w-full px-3 py-2 rounded-xl border border-[#C9B29B] bg-[#F2E3D2] text-sm">
-                <span class="text-[#5E3D2A]">-</span>
-                <input type="number" placeholder="Máx" class="w-full px-3 py-2 rounded-xl border border-[#C9B29B] bg-[#F2E3D2] text-sm">
-              </div>
-            </div>
-
             <button class="w-full bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors">
               Aplicar filtros
             </button>
@@ -95,48 +68,56 @@
         </div>
       </div>
 
-      <!-- Lista de productos estilo Amazon/Mercado Libre -->
+      <!-- Lista de productos -->
       <div class="lg:col-span-2">
-        <!-- Header con cantidad de resultados -->
         <div class="flex items-center justify-between mb-4">
           <p class="text-sm text-[#5E3D2A]">
-            <span class="font-bold">{{ lotes.filter(l => l.disponible).length }}</span> productos disponibles
+            <span class="font-bold">{{ productosDisponibles.length }}</span> productos disponibles
           </p>
-          <select class="px-3 py-2 rounded-xl border border-[#C9B29B] bg-white text-sm text-[#3D2212]">
-            <option>Ordenar por: Recomendados</option>
-            <option>Precio: menor a mayor</option>
-            <option>Precio: mayor a menor</option>
-          </select>
         </div>
 
-        <!-- Grid de productos -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div *ngFor="let lote of lotes" 
+        <!-- Estado: cargando catálogo -->
+        <div *ngIf="loadingCatalogo" class="bg-white rounded-2xl shadow-md p-8 border border-[#D7BBA4]/30 flex justify-center items-center gap-2">
+          <svg class="animate-spin h-5 w-5 text-[#7A3E24]" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-[#5E3D2A]">Cargando catálogo...</span>
+        </div>
+
+        <!-- Estado: sin error, sin loading, pero 0 productos -->
+        <div *ngIf="!loadingCatalogo && !errorMessage && productosDisponibles.length === 0"
+             class="bg-white rounded-2xl shadow-md p-8 border border-[#D7BBA4]/30 text-center text-[#5E3D2A]">
+          No hay camas de café disponibles en este momento.
+        </div>
+
+        <div *ngIf="!loadingCatalogo && productosDisponibles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div *ngFor="let producto of productosDisponibles"
                class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-[#D7BBA4]/30 hover:border-[#7A3E24]/30 cursor-pointer"
-               (click)="seleccionarLote(lote)"
-               [class.ring-2]="loteSeleccionadoId === lote.id"
-               [class.ring-[#7A3E24]]="loteSeleccionadoId === lote.id">
-            
-            <!-- Imagen del producto -->
+               (click)="seleccionarProducto(producto)"
+               [class.ring-2]="productoSeleccionadoId === producto.id_producto"
+               [class.ring-[#7A3E24]]="productoSeleccionadoId === producto.id_producto">
+
             <div class="relative h-48 bg-gradient-to-br from-[#F2E3D2] to-[#E8D5C4] flex items-center justify-center">
               <span class="text-6xl">☕</span>
-              <div *ngIf="!lote.disponible" class="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div *ngIf="producto.stock <= 0" class="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <span class="text-white font-bold text-lg bg-red-600 px-4 py-2 rounded-full">Agotado</span>
               </div>
-              <div *ngIf="loteSeleccionadoId === lote.id" class="absolute top-2 right-2 bg-[#7A3E24] text-white text-xs px-2 py-1 rounded-full">
+              <div *ngIf="productoSeleccionadoId === producto.id_producto" class="absolute top-2 right-2 bg-[#7A3E24] text-white text-xs px-2 py-1 rounded-full">
                 ✓ Seleccionado
               </div>
             </div>
 
-            <!-- Información del producto -->
             <div class="p-4">
-              <h3 class="font-bold text-[#3D2212] text-lg truncate">{{ lote.nombre }}</h3>
-              <p class="text-sm text-[#5E3D2A] line-clamp-2 h-10">{{ lote.descripcion }}</p>
-              
+              <h3 class="font-bold text-[#3D2212] text-lg truncate">{{ producto.nombre }}</h3>
+              <p class="text-sm text-[#5E3D2A] line-clamp-2 h-10">{{ producto.descripcion }}</p>
+              <p *ngIf="producto.variedad" class="text-xs text-[#7A3E24] mt-1">Variedad: {{ producto.variedad }}</p>
+              <p *ngIf="producto.peso_kg" class="text-xs text-[#5E3D2A]">Peso: {{ producto.peso_kg }} kg</p>
+
               <div class="flex items-center justify-between mt-3">
                 <div>
-                  <span class="text-2xl font-bold text-[#7A3E24]">{{ lote.precio | currency:'MXN':'symbol':'1.0-0' }}</span>
-                  <span *ngIf="lote.disponible" class="text-xs text-emerald-600 ml-2">En stock</span>
+                  <span class="text-2xl font-bold text-[#7A3E24]">{{ producto.precio | currency:'MXN':'symbol':'1.0-0' }}</span>
+                  <span *ngIf="producto.stock > 0" class="text-xs text-emerald-600 ml-2">Stock: {{ producto.stock }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-yellow-500">★</span>
@@ -144,12 +125,12 @@
                 </div>
               </div>
 
-              <button *ngIf="lote.disponible" 
-                      (click)="$event.stopPropagation(); seleccionarLote(lote)"
+              <button *ngIf="producto.stock > 0"
+                      (click)="$event.stopPropagation(); seleccionarProducto(producto)"
                       class="w-full mt-3 bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors text-sm">
-                {{ loteSeleccionadoId === lote.id ? '✓ Seleccionado' : 'Seleccionar' }}
+                {{ productoSeleccionadoId === producto.id_producto ? '✓ Seleccionado' : 'Seleccionar' }}
               </button>
-              <button *ngIf="!lote.disponible" 
+              <button *ngIf="producto.stock <= 0"
                       class="w-full mt-3 bg-gray-300 text-gray-500 py-2 rounded-xl font-medium cursor-not-allowed text-sm">
                 No disponible
               </button>
@@ -157,20 +138,20 @@
           </div>
         </div>
 
-        <!-- Resumen de compra fijo en desktop -->
+        <!-- Resumen de compra -->
         <div class="mt-6 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <p class="text-sm text-[#5E3D2A]">Producto seleccionado</p>
               <p class="font-bold text-[#3D2212]">
-                {{ loteSeleccionado ? loteSeleccionado.nombre : 'Ninguno seleccionado' }}
-                <span *ngIf="loteSeleccionado" class="text-[#7A3E24] text-sm font-normal ml-2">
-                  {{ loteSeleccionado.precio | currency:'MXN':'symbol':'1.0-0' }}
+                {{ productoSeleccionado ? productoSeleccionado.nombre : 'Ninguno seleccionado' }}
+                <span *ngIf="productoSeleccionado" class="text-[#7A3E24] text-sm font-normal ml-2">
+                  {{ productoSeleccionado.precio | currency:'MXN':'symbol':'1.0-0' }}
                 </span>
               </p>
             </div>
-            <button (click)="scrollToForm()" 
-                    [disabled]="!loteSeleccionadoId"
+            <button (click)="scrollToForm()"
+                    [disabled]="!productoSeleccionadoId"
                     class="bg-[#7A3E24] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#5F2E19] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
               Comprar ahora
             </button>
@@ -180,14 +161,14 @@
         <!-- Formulario de compra -->
         <div id="checkout-form" class="mt-6 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30">
           <h3 class="font-bold text-[#3D2212] text-lg mb-4">Completa tus datos</h3>
-          
+
           <form (ngSubmit)="submitOrder()" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-[#5E3D2A] mb-1">
                   Nombre completo <span class="text-red-500">*</span>
                 </label>
-                <input type="text" [(ngModel)]="name" name="name" 
+                <input type="text" [(ngModel)]="name" name="name"
                        class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
                        placeholder="Tu nombre" required>
               </div>
@@ -195,7 +176,7 @@
                 <label class="block text-sm font-medium text-[#5E3D2A] mb-1">
                   Correo electrónico <span class="text-red-500">*</span>
                 </label>
-                <input type="email" [(ngModel)]="email" name="email" 
+                <input type="email" [(ngModel)]="email" name="email"
                        class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
                        placeholder="tu@email.com" required>
               </div>
@@ -204,27 +185,23 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Teléfono</label>
-                <input type="tel" [(ngModel)]="phone" name="phone" 
+                <input type="tel" [(ngModel)]="phone" name="phone"
                        class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
                        placeholder="9611234567">
               </div>
               <div>
                 <label class="block text-sm font-medium text-[#5E3D2A] mb-1">País</label>
-                <input type="text" [(ngModel)]="country" name="country" 
+                <input type="text" [(ngModel)]="country" name="country"
                        class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
                        placeholder="MX">
               </div>
             </div>
 
-            <!-- Mensajes -->
-            <div *ngIf="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              ⚠️ {{ errorMessage }}
-            </div>
             <div *ngIf="successMessage" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
               ✅ {{ successMessage }}
             </div>
 
-            <button type="submit" [disabled]="loading || !loteSeleccionadoId"
+            <button type="submit" [disabled]="loading || !productoSeleccionadoId"
                     class="w-full bg-[#7A3E24] text-white py-4 rounded-xl font-semibold hover:bg-[#5F2E19] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-lg">
               <span *ngIf="loading" class="flex items-center justify-center gap-2">
                 <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">

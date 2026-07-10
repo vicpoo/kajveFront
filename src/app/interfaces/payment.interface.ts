@@ -1,10 +1,11 @@
-// payment.interface.ts - Añadir EstadoOrden
+// payment.interface.ts - CORREGIDO para coincidir con la API
 export interface CrearOrdenRequest {
-  id_lote: number;
+  id_producto: number;
   nombre_comprador: string;
   email_comprador: string;
   telefono_comprador?: string;
   pais?: string;
+  id_usuario?: number | null;
 }
 
 export interface CrearOrdenResponse {
@@ -19,26 +20,30 @@ export interface ListarOrdenesParams {
   offset?: number;
 }
 
-export interface ActualizarEstadoRequest {
-  estado: 'pendiente' | 'pagada' | 'cancelada' | 'reembolsada';
-}
-
-// Exportar el tipo para usarlo en el componente
 export type EstadoOrden = 'pendiente' | 'pagada' | 'cancelada' | 'reembolsada';
 
+// ¡IMPORTANTE! Esta interfaz debe coincidir EXACTAMENTE con lo que devuelve tu API
 export interface OrdenConComprador {
-  id: number;
-  id_lote: number;
-  id_comprador: number;
-  precio_total: number;
-  moneda: string;
-  estado: 'pendiente' | 'pagada' | 'cancelada' | 'reembolsada';
-  stripe_checkout_session_id: string;
-  stripe_payment_intent_id: string;
-  fecha_orden: string;
-  fecha_pago: string | null;
-  nombre_comprador: string;
-  email_comprador: string;
-  telefono_comprador: string;
-  pais_comprador: string;
+  ID: number;                    // Mayúscula como viene de la API
+  IDProducto: number;            // Mayúscula
+  TipoOrden: string;             // Mayúscula
+  IDLote?: number | null;        // Mayúscula
+  IDComprador: number;           // Mayúscula
+  IDUsuario?: number | null;     // Mayúscula
+  PrecioTotal: number;           // Mayúscula
+  Moneda: string;                // Mayúscula
+  Estado: EstadoOrden;           // Mayúscula
+  StripeCheckoutSessionID: string; // Mayúscula
+  StripePaymentIntentID: string;   // Mayúscula
+  FechaOrden: string;            // Mayúscula
+  FechaPago: string | null;      // Mayúscula
+  NombreComprador: string;       // Mayúscula
+  EmailComprador: string;        // Mayúscula
+  TelefonoComprador: string;     // Mayúscula
+  PaisComprador: string;         // Mayúscula
+  NombreProducto: string;        // Mayúscula - Nuevo campo
+}
+
+export interface ActualizarEstadoRequest {
+  estado: EstadoOrden;
 }

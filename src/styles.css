@@ -1,1 +1,26 @@
 @import 'tailwindcss';
+
+@import 'ngx-toastr/toastr';
+
+/* Estilos personalizados para toastr */
+.toast-container .ngx-toastr {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.toast-success {
+  background-color: #7A3E24 !important;
+}
+
+.toast-error {
+  background-color: #dc3545 !important;
+}
+
+.toast-info {
+  background-color: #17a2b8 !important;
+}
+
+.toast-warning {
+  background-color: #ffc107 !important;
+  color: #333 !important;
+}

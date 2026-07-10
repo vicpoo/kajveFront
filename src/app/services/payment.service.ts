@@ -15,10 +15,12 @@ export class PaymentService {
   private http = inject(HttpClient);
   private readonly baseUrl = 'http://localhost:8000';
 
+  // Público - Crear orden de compra
   crearOrden(body: CrearOrdenRequest): Observable<CrearOrdenResponse> {
     return this.http.post<CrearOrdenResponse>(`${this.baseUrl}/orders`, body);
   }
 
+  // Admin - Gestión de órdenes
   listarOrdenes(params?: ListarOrdenesParams): Observable<OrdenConComprador[]> {
     let httpParams = new HttpParams();
     if (params?.estado) {
@@ -33,7 +35,6 @@ export class PaymentService {
     if (params?.offset) {
       httpParams = httpParams.set('offset', params.offset.toString());
     }
-
     return this.http.get<OrdenConComprador[]>(`${this.baseUrl}/admin/orders`, { params: httpParams });
   }
 

@@ -1,4 +1,5 @@
 <!-- osiles-page.component.html - Panel de administración estilo Mercado Libre -->
+<!-- osiles-page.component.html - Panel de administración estilo Mercado Libre -->
 <div class="min-h-screen bg-[#F5EDE6]">
   <!-- Navbar Admin -->
   <nav class="bg-[#6B3A23] shadow-lg sticky top-0 z-50">
@@ -25,12 +26,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
         <h1 class="text-2xl sm:text-3xl font-bold text-[#3D2212]">📦 Gestión de Órdenes</h1>
-        <p class="text-sm text-[#5E3D2A]">Administra los pedidos de Osil y su estado</p>
+        <p class="text-sm text-[#5E3D2A]">Administra los pedidos y el catálogo de productos</p>
       </div>
       <div class="flex gap-3">
-        <button (click)="abrirModalLote()" 
+        <button (click)="abrirModalProducto()" 
                 class="bg-[#7A3E24] text-white px-4 py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-all shadow-md hover:shadow-lg text-sm flex items-center gap-2">
-          <span>+</span> Nuevo Lote
+          <span>+</span> Nuevo Producto
         </button>
         <a routerLink="/admin/dashboard" class="border border-[#7A3E24] text-[#7A3E24] px-4 py-2 rounded-xl font-medium hover:bg-[#7A3E24] hover:text-white transition-all text-sm">
           ← Dashboard
@@ -38,7 +39,7 @@
       </div>
     </div>
 
-    <!-- Filtros estilo Mercado Libre -->
+    <!-- Filtros -->
     <div class="bg-white rounded-2xl p-4 shadow-md mb-6 border border-[#D7BBA4]/30">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
@@ -53,11 +54,11 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Lote</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Producto</label>
           <select [(ngModel)]="filterLote" (change)="aplicarFiltros()"
                   class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-3 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
             <option [value]="0">Todos</option>
-            <option *ngFor="let lote of lotes" [value]="lote.id">{{ lote.nombre }}</option>
+            <option *ngFor="let p of productos" [value]="p.id_producto">{{ p.nombre }}</option>
           </select>
         </div>
         <div>
@@ -79,15 +80,16 @@
       </div>
     </div>
 
-    <!-- Tabla de órdenes estilo Mercado Libre -->
+    <!-- Tabla de órdenes -->
     <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-[#D7BBA4]/30">
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[800px]">
+        <table class="w-full min-w-[900px]">
           <thead class="bg-[#F7E8DA] border-b-2 border-[#D7BBA4]">
             <tr>
               <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">ID</th>
               <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Comprador</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Lote</th>
+              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Producto</th>
+              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Tipo</th>
               <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Fecha</th>
               <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Estado</th>
               <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Total</th>
@@ -96,7 +98,7 @@
           </thead>
           <tbody class="divide-y divide-[#E1C9B3]">
             <tr *ngIf="loading">
-              <td colspan="7" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
+              <td colspan="8" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
                 <div class="flex justify-center items-center gap-2">
                   <svg class="animate-spin h-5 w-5 text-[#7A3E24]" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
@@ -107,45 +109,50 @@
               </td>
             </tr>
             <tr *ngIf="!loading && orders.length === 0">
-              <td colspan="7" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
+              <td colspan="8" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
                 No hay órdenes para mostrar
               </td>
             </tr>
             <tr *ngFor="let order of orders" class="hover:bg-[#F8F0E8] transition-colors">
-              <td class="px-4 sm:px-6 py-4 font-mono text-sm text-[#3D2212]">#{{ order.id }}</td>
+              <td class="px-4 sm:px-6 py-4 font-mono text-sm text-[#3D2212]">#{{ order.ID }}</td>
               <td class="px-4 sm:px-6 py-4">
-                <div class="font-semibold text-[#3D2212] text-sm">{{ order.nombre_comprador }}</div>
-                <div class="text-xs text-[#7A3E24] break-all">{{ order.email_comprador }}</div>
+                <div class="font-semibold text-[#3D2212] text-sm">{{ order.NombreComprador }}</div>
+                <div class="text-xs text-[#7A3E24] break-all">{{ order.EmailComprador }}</div>
               </td>
-              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ getNombreLote(order.id_lote) }}</td>
-              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ formatearFecha(order.fecha_orden) }}</td>
+              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ order.NombreProducto || getNombreProducto(order.IDProducto) }}</td>
+              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-[#F2E3D2]">
+                  {{ getTipoProductoLabel(order.TipoOrden) }}
+                </span>
+              </td>
+              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ formatearFecha(order.FechaOrden) }}</td>
               <td class="px-4 sm:px-6 py-4">
-                <span class="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold {{ getEstadoColor(order.estado) }}">
-                  {{ getEstadoLabel(order.estado) }}
+                <span class="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold {{ getEstadoColor(order.Estado) }}">
+                  {{ getEstadoLabel(order.Estado) }}
                 </span>
               </td>
               <td class="px-4 sm:px-6 py-4 font-semibold text-[#3D2212]">
-                {{ order.precio_total | currency:'MXN':'symbol':'1.0-0' }}
+                {{ order.PrecioTotal | currency:'MXN':'symbol':'1.0-0' }}
               </td>
               <td class="px-4 sm:px-6 py-4">
                 <div class="flex flex-wrap gap-1 sm:gap-2">
-                  <button *ngIf="order.estado === 'pendiente'"
+                  <button *ngIf="order.Estado === 'pendiente'"
                           (click)="actualizarEstado(order, 'pagada')"
-                          [disabled]="updatingId === order.id"
+                          [disabled]="updatingId === order.ID"
                           class="rounded-full bg-[#7A3E24] text-white px-2 sm:px-3 py-1 text-xs font-medium hover:bg-[#5F2E19] transition-colors disabled:opacity-50">
-                    {{ updatingId === order.id ? '...' : '✅ Pagar' }}
+                    {{ updatingId === order.ID ? '...' : '✅ Pagar' }}
                   </button>
-                  <button *ngIf="order.estado === 'pendiente' || order.estado === 'pagada'"
+                  <button *ngIf="order.Estado === 'pendiente' || order.Estado === 'pagada'"
                           (click)="actualizarEstado(order, 'cancelada')"
-                          [disabled]="updatingId === order.id"
+                          [disabled]="updatingId === order.ID"
                           class="rounded-full bg-[#8A5A3E] text-white px-2 sm:px-3 py-1 text-xs font-medium hover:bg-[#6B452E] transition-colors disabled:opacity-50">
-                    {{ updatingId === order.id ? '...' : '❌ Cancelar' }}
+                    {{ updatingId === order.ID ? '...' : '❌ Cancelar' }}
                   </button>
-                  <button *ngIf="order.estado === 'pagada'"
+                  <button *ngIf="order.Estado === 'pagada'"
                           (click)="actualizarEstado(order, 'reembolsada')"
-                          [disabled]="updatingId === order.id"
+                          [disabled]="updatingId === order.ID"
                           class="rounded-full bg-gray-500 text-white px-2 sm:px-3 py-1 text-xs font-medium hover:bg-gray-600 transition-colors disabled:opacity-50">
-                    {{ updatingId === order.id ? '...' : '↩️ Reembolsar' }}
+                    {{ updatingId === order.ID ? '...' : '↩️ Reembolsar' }}
                   </button>
                 </div>
               </td>
@@ -180,40 +187,106 @@
   </div>
 </div>
 
-<!-- Modal para crear nuevo lote -->
-<div *ngIf="modalLoteAbierto" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-    <h3 class="text-xl font-bold text-[#3D2212] mb-4">Nuevo Lote</h3>
-    <form (ngSubmit)="crearLote()" class="space-y-4">
+<!-- Modal para crear nuevo producto (sin cambios) -->
+<div *ngIf="modalProductoAbierto" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <h3 class="text-xl font-bold text-[#3D2212] mb-4">Nuevo Producto</h3>
+    <form (ngSubmit)="crearProducto()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Tipo *</label>
+        <select [(ngModel)]="nuevoProducto.tipo_producto" name="tipoProducto"
+                class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
+          <option value="cama_cafe">Cama de café</option>
+          <option value="suscripcion">Suscripción</option>
+        </select>
+      </div>
       <div>
         <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Nombre *</label>
-        <input type="text" [(ngModel)]="nuevoLote.nombre" name="nombreLote"
+        <input type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre"
                class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
                required>
       </div>
       <div>
         <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Descripción</label>
-        <textarea [(ngModel)]="nuevoLote.descripcion" name="descripcionLote" rows="3"
-                  class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                  placeholder="Descripción del lote"></textarea>
+        <textarea [(ngModel)]="nuevoProducto.descripcion" name="descripcion" rows="2"
+                  class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"></textarea>
       </div>
       <div>
         <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Precio (MXN) *</label>
-        <input type="number" [(ngModel)]="nuevoLote.precio" name="precioLote"
+        <input type="number" [(ngModel)]="nuevoProducto.precio" name="precio"
                class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
                required min="0" step="0.01">
       </div>
-      <div class="flex items-center gap-2">
-        <input type="checkbox" [(ngModel)]="nuevoLote.disponible" name="disponibleLote"
-               class="rounded border-[#C9B29B] text-[#7A3E24]">
-        <label class="text-sm text-[#5E3D2A]">Disponible para venta</label>
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Imagen URL</label>
+        <input type="text" [(ngModel)]="nuevoProducto.imagen_url" name="imagenUrl"
+               class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+               placeholder="https://...">
       </div>
+      
+      <!-- Campos específicos: Cama de café -->
+      <div *ngIf="nuevoProducto.tipo_producto === 'cama_cafe'" class="border-t border-[#D7BBA4] pt-4 space-y-3">
+        <h4 class="font-medium text-[#3D2212] text-sm">Datos de la cama de café</h4>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Variedad</label>
+          <input type="text" [(ngModel)]="nuevoProducto.variedad" name="variedad"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Peso (kg) *</label>
+          <input type="number" [(ngModel)]="nuevoProducto.peso_kg" name="pesoKg"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                 min="0" step="0.1">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Stock *</label>
+          <input type="number" [(ngModel)]="nuevoProducto.stock" name="stock"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                 min="0">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">ID Lote (opcional)</label>
+          <input type="number" [(ngModel)]="nuevoProducto.id_lote" name="idLote"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                 min="0">
+        </div>
+      </div>
+
+      <!-- Campos específicos: Suscripción -->
+      <div *ngIf="nuevoProducto.tipo_producto === 'suscripcion'" class="border-t border-[#D7BBA4] pt-4 space-y-3">
+        <h4 class="font-medium text-[#3D2212] text-sm">Datos de la suscripción</h4>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Plan *</label>
+          <input type="text" [(ngModel)]="nuevoProducto.plan_suscripcion" name="plan"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                 placeholder="Premium, Básico, etc.">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Duración (días) *</label>
+          <input type="number" [(ngModel)]="nuevoProducto.duracion_dias" name="duracion"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                 min="1">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Lotes máximos</label>
+          <input type="number" [(ngModel)]="nuevoProducto.lotes_max" name="lotesMax"
+                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                 min="0">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input type="checkbox" [(ngModel)]="nuevoProducto.activo" name="activo"
+               class="rounded border-[#C9B29B] text-[#7A3E24]">
+        <label class="text-sm text-[#5E3D2A]">Activo (disponible para venta)</label>
+      </div>
+
       <div class="flex gap-3 mt-6">
-        <button type="submit" [disabled]="creandoLote"
+        <button type="submit" [disabled]="creandoProducto"
                 class="flex-1 bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors disabled:opacity-50">
-          {{ creandoLote ? 'Creando...' : 'Crear Lote' }}
+          {{ creandoProducto ? 'Creando...' : 'Crear Producto' }}
         </button>
-        <button type="button" (click)="cerrarModalLote()"
+        <button type="button" (click)="cerrarModalProducto()"
                 class="flex-1 border border-[#C9B29B] text-[#5E3D2A] py-2 rounded-xl font-medium hover:bg-[#F2E3D2] transition-colors">
           Cancelar
         </button>
