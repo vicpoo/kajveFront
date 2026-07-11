@@ -13,7 +13,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
 
   // Público - Crear orden de compra
   crearOrden(body: CrearOrdenRequest): Observable<CrearOrdenResponse> {

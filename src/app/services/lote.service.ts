@@ -7,7 +7,7 @@ import { CrearLoteRequest, LoteVenta } from '../interfaces/lote.interface';
 @Injectable({ providedIn: 'root' })
 export class LoteService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
 
   obtenerLotes(): Observable<LoteVenta[]> {
     return this.http.get<LoteVenta[]>(`${this.baseUrl}/lotes`);

@@ -1,4 +1,4 @@
-// pages/admin-shell/osiles-page.component.ts - CORREGIDO (fix NG0100)
+// pages/admin-shell/osiles-page.component.ts
 import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -97,14 +97,14 @@ export class OsilesPageComponent implements OnInit, OnDestroy {
       offset: this.offset
     }).subscribe({
       next: (orders) => {
-        console.log('Órdenes recibidas:', orders); // Debug
+        console.log('Órdenes recibidas:', orders);
         this.orders = orders;
         this.loading = false;
         this.errorMessage = '';
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error completo:', err); // Debug
+        console.error('Error completo:', err);
         this.errorMessage = 'No se pudieron cargar las órdenes.';
         this.loading = false;
         this.toastr.error('Error al cargar órdenes');
@@ -158,8 +158,6 @@ export class OsilesPageComponent implements OnInit, OnDestroy {
         this.updatingId = null;
         this.toastr.success(`Orden #${order.ID} actualizada a ${this.getEstadoLabel(estado)}`);
 
-        // Diferimos la recarga para no chocar con el ciclo de detección
-        // de cambios que dispara el toast (misma causa del NG0100).
         setTimeout(() => {
           this.cargarOrdenes();
         }, 0);
@@ -194,7 +192,6 @@ export class OsilesPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper para extraer mensaje de error
   private extraerMensajeError(err: any): string {
     if (err && err.error && err.error.message) {
       return err.error.message;
@@ -208,7 +205,6 @@ export class OsilesPageComponent implements OnInit, OnDestroy {
     return 'Error al crear el producto.';
   }
 
-  // Modal para crear producto
   abrirModalProducto() {
     this.nuevoProducto = {
       tipo_producto: 'cama_cafe',
@@ -268,15 +264,6 @@ export class OsilesPageComponent implements OnInit, OnDestroy {
         this.errorMessage = '';
         this.toastr.success(`Producto "${nombreCreado}" creado con éxito!`);
 
-        // CLAVE: diferimos cargarDatos() al siguiente "tick" (macrotask)
-        // en vez de llamarlo de forma síncrona justo después del toast.
-        // El toast dispara sus propios ciclos de detección de cambios
-        // (barra de progreso vía setInterval) y si la recarga de
-        // productos/órdenes reasigna los arreglos casi al mismo tiempo,
-        // Angular detecta un cambio de valor entre el "check" y el
-        // "re-check" del mismo ciclo -> NG0100. Al usar setTimeout,
-        // la recarga ocurre en un ciclo de detección de cambios propio,
-        // limpio, y el error desaparece.
         setTimeout(() => {
           this.cargarDatos();
         }, 0);

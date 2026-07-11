@@ -17,7 +17,7 @@ export class ProductoService {
   // en el que está corriendo tu microservicio de Go (variable de entorno
   // PORT). Si tu backend usa el default (8080) y aquí dice 8000, todas
   // las peticiones fallarán con status 0 (sin respuesta del servidor).
-  private readonly baseUrl = 'http://localhost:8000';
+  private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
 
   // Catálogo público
   listarProductos(filtro?: FiltroCatalogo): Observable<Producto[]> {

@@ -1,296 +1,343 @@
-<!-- osiles-page.component.html - Panel de administración estilo Mercado Libre -->
-<!-- osiles-page.component.html - Panel de administración estilo Mercado Libre -->
-<div class="min-h-screen bg-[#F5EDE6]">
-  <!-- Navbar Admin -->
-  <nav class="bg-[#6B3A23] shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto px-4 sm:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center gap-4">
-          <a routerLink="/admin/dashboard" class="flex items-center gap-2">
-            <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
-            <span class="text-xl font-bold text-white">Admin</span>
-          </a>
-        </div>
-        <div class="flex items-center gap-4">
-          <span class="text-white/80 text-sm hidden sm:block">Administrador</span>
-          <button (click)="logout()" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm hover:bg-white/30 transition-all">
-            Salir
-          </button>
-        </div>
-      </div>
+<!-- osiles-page.component.html -->
+<section class="min-h-screen rounded-[40px] bg-[#F2E6D8] p-4 sm:p-6 md:p-10 text-[#3D2212] shadow-[0_20px_60px_rgba(107,58,35,0.12)]">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+    <div>
+      <p class="text-sm uppercase tracking-[0.28em] text-[#7A3E24]/80 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-[#7A3E24]"></span> Administración
+      </p>
+      <h1 class="mt-2 text-3xl sm:text-4xl font-semibold text-[#3D2212]">📦 Gestión de órdenes</h1>
+      <p class="mt-1 text-sm text-[#5E3D2A]/80">Administra pedidos, productos y suscripciones</p>
     </div>
-  </nav>
-
-  <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-[#3D2212]">📦 Gestión de Órdenes</h1>
-        <p class="text-sm text-[#5E3D2A]">Administra los pedidos y el catálogo de productos</p>
-      </div>
-      <div class="flex gap-3">
-        <button (click)="abrirModalProducto()" 
-                class="bg-[#7A3E24] text-white px-4 py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-all shadow-md hover:shadow-lg text-sm flex items-center gap-2">
-          <span>+</span> Nuevo Producto
-        </button>
-        <a routerLink="/admin/dashboard" class="border border-[#7A3E24] text-[#7A3E24] px-4 py-2 rounded-xl font-medium hover:bg-[#7A3E24] hover:text-white transition-all text-sm">
-          ← Dashboard
-        </a>
-      </div>
-    </div>
-
-    <!-- Filtros -->
-    <div class="bg-white rounded-2xl p-4 shadow-md mb-6 border border-[#D7BBA4]/30">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Estado</label>
-          <select [(ngModel)]="filterEstado" (change)="aplicarFiltros()"
-                  class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-3 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
-            <option value="">Todos</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="pagada">Pagada</option>
-            <option value="cancelada">Cancelada</option>
-            <option value="reembolsada">Reembolsada</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Producto</label>
-          <select [(ngModel)]="filterLote" (change)="aplicarFiltros()"
-                  class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-3 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
-            <option [value]="0">Todos</option>
-            <option *ngFor="let p of productos" [value]="p.id_producto">{{ p.nombre }}</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Por página</label>
-          <select [(ngModel)]="limit" (change)="aplicarFiltros()"
-                  class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-3 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
-            <option [value]="10">10</option>
-            <option [value]="25">25</option>
-            <option [value]="50">50</option>
-            <option [value]="100">100</option>
-          </select>
-        </div>
-        <div class="flex items-end">
-          <button (click)="aplicarFiltros()"
-                  class="w-full rounded-xl bg-[#7A3E24] text-white px-4 py-2 font-medium hover:bg-[#5F2E19] transition-all shadow-md hover:shadow-lg">
-            🔍 Aplicar filtros
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabla de órdenes -->
-    <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-[#D7BBA4]/30">
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[900px]">
-          <thead class="bg-[#F7E8DA] border-b-2 border-[#D7BBA4]">
-            <tr>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">ID</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Comprador</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Producto</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Tipo</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Fecha</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Estado</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Total</th>
-              <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#E1C9B3]">
-            <tr *ngIf="loading">
-              <td colspan="8" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
-                <div class="flex justify-center items-center gap-2">
-                  <svg class="animate-spin h-5 w-5 text-[#7A3E24]" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Cargando órdenes...
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="!loading && orders.length === 0">
-              <td colspan="8" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
-                No hay órdenes para mostrar
-              </td>
-            </tr>
-            <tr *ngFor="let order of orders" class="hover:bg-[#F8F0E8] transition-colors">
-              <td class="px-4 sm:px-6 py-4 font-mono text-sm text-[#3D2212]">#{{ order.ID }}</td>
-              <td class="px-4 sm:px-6 py-4">
-                <div class="font-semibold text-[#3D2212] text-sm">{{ order.NombreComprador }}</div>
-                <div class="text-xs text-[#7A3E24] break-all">{{ order.EmailComprador }}</div>
-              </td>
-              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ order.NombreProducto || getNombreProducto(order.IDProducto) }}</td>
-              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">
-                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-[#F2E3D2]">
-                  {{ getTipoProductoLabel(order.TipoOrden) }}
-                </span>
-              </td>
-              <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ formatearFecha(order.FechaOrden) }}</td>
-              <td class="px-4 sm:px-6 py-4">
-                <span class="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold {{ getEstadoColor(order.Estado) }}">
-                  {{ getEstadoLabel(order.Estado) }}
-                </span>
-              </td>
-              <td class="px-4 sm:px-6 py-4 font-semibold text-[#3D2212]">
-                {{ order.PrecioTotal | currency:'MXN':'symbol':'1.0-0' }}
-              </td>
-              <td class="px-4 sm:px-6 py-4">
-                <div class="flex flex-wrap gap-1 sm:gap-2">
-                  <button *ngIf="order.Estado === 'pendiente'"
-                          (click)="actualizarEstado(order, 'pagada')"
-                          [disabled]="updatingId === order.ID"
-                          class="rounded-full bg-[#7A3E24] text-white px-2 sm:px-3 py-1 text-xs font-medium hover:bg-[#5F2E19] transition-colors disabled:opacity-50">
-                    {{ updatingId === order.ID ? '...' : '✅ Pagar' }}
-                  </button>
-                  <button *ngIf="order.Estado === 'pendiente' || order.Estado === 'pagada'"
-                          (click)="actualizarEstado(order, 'cancelada')"
-                          [disabled]="updatingId === order.ID"
-                          class="rounded-full bg-[#8A5A3E] text-white px-2 sm:px-3 py-1 text-xs font-medium hover:bg-[#6B452E] transition-colors disabled:opacity-50">
-                    {{ updatingId === order.ID ? '...' : '❌ Cancelar' }}
-                  </button>
-                  <button *ngIf="order.Estado === 'pagada'"
-                          (click)="actualizarEstado(order, 'reembolsada')"
-                          [disabled]="updatingId === order.ID"
-                          class="rounded-full bg-gray-500 text-white px-2 sm:px-3 py-1 text-xs font-medium hover:bg-gray-600 transition-colors disabled:opacity-50">
-                    {{ updatingId === order.ID ? '...' : '↩️ Reembolsar' }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <!-- Paginación -->
-      <div class="px-4 sm:px-6 py-4 border-t border-[#D7BBA4] bg-[#FAF2E8] flex flex-col sm:flex-row justify-between items-center gap-4">
-        <span class="text-sm text-[#5E3D2A]">
-          Mostrando {{ orders.length }} órdenes
-          <span *ngIf="offset > 0"> (desde #{{ offset + 1 }})</span>
-        </span>
-        <div class="flex gap-2">
-          <button (click)="cambiarPagina(-1)" [disabled]="offset === 0 || loading"
-                  class="px-4 py-2 rounded-xl border border-[#C9B29B] text-[#5E3D2A] hover:bg-[#7A3E24] hover:text-white transition-colors disabled:opacity-50">
-            ← Anterior
-          </button>
-          <button (click)="cambiarPagina(1)" [disabled]="orders.length < limit || loading"
-                  class="px-4 py-2 rounded-xl border border-[#C9B29B] text-[#5E3D2A] hover:bg-[#7A3E24] hover:text-white transition-colors disabled:opacity-50">
-            Siguiente →
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mensaje de error -->
-    <div *ngIf="errorMessage" class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-      ⚠️ {{ errorMessage }}
+    <div class="flex gap-3">
+      <button
+        (click)="cargarDatos()"
+        class="inline-flex items-center justify-center rounded-full bg-[#75341A] px-6 py-3 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="loading"
+      >
+        <svg *ngIf="loading" class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ loading ? 'Cargando...' : '🔄 Actualizar' }}
+      </button>
+      <button
+        (click)="abrirModalProducto()"
+        class="inline-flex items-center justify-center rounded-full bg-[#7A3E24] px-6 py-3 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5F2E19] hover:shadow-lg hover:scale-105"
+      >
+        <span class="text-lg mr-1">+</span> Nuevo Producto
+      </button>
     </div>
   </div>
-</div>
 
-<!-- Modal para crear nuevo producto (sin cambios) -->
+  <!-- Filtros -->
+  <div class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Estado</label>
+        <select [(ngModel)]="filterEstado" (change)="aplicarFiltros()"
+                class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer">
+          <option value="">Todos</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="pagada">Pagada</option>
+          <option value="cancelada">Cancelada</option>
+          <option value="reembolsada">Reembolsada</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Producto</label>
+        <select [(ngModel)]="filterLote" (change)="aplicarFiltros()"
+                class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer">
+          <option [value]="0">Todos</option>
+          <option *ngFor="let p of productos" [value]="p.id_producto">{{ p.nombre }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Por página</label>
+        <select [(ngModel)]="limit" (change)="aplicarFiltros()"
+                class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer">
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+          <option [value]="100">100</option>
+        </select>
+      </div>
+      <div class="flex items-end">
+        <button (click)="aplicarFiltros()"
+                class="w-full rounded-2xl bg-[#75341A] text-white px-6 py-3 font-semibold transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+          🔍 Aplicar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de órdenes -->
+  <div class="rounded-[32px] border border-[#D7BBA4]/80 bg-white shadow-[0_20px_60px_rgba(107,58,35,0.12)] overflow-hidden">
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="p-8 text-center text-[#5E3D2A]">
+      <div class="inline-block animate-spin text-3xl mb-2">⟳</div>
+      <p>Cargando órdenes...</p>
+    </div>
+
+    <!-- Tabla -->
+    <div *ngIf="!loading" class="overflow-x-auto">
+      <table class="w-full min-w-[900px]">
+        <thead class="bg-[#F8EEE2] border-b-2 border-[#D7BBA4]">
+          <tr>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">ID</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Comprador</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Producto</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Tipo</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Fecha</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Estado</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Total</th>
+            <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-[#5E3D2A] uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#D7BBA4]/40">
+          <tr *ngIf="orders.length === 0">
+            <td colspan="8" class="px-4 sm:px-6 py-8 text-center text-[#5E3D2A]">
+              <p class="text-4xl mb-2">📭</p>
+              <p>No hay órdenes para mostrar</p>
+            </td>
+          </tr>
+          <tr *ngFor="let order of orders" class="hover:bg-[#F8F0E8] transition-colors duration-200">
+            <td class="px-4 sm:px-6 py-4 font-mono text-sm font-semibold text-[#3D2212]">#{{ order.ID }}</td>
+            <td class="px-4 sm:px-6 py-4">
+              <div class="font-semibold text-[#3D2212] text-sm">{{ order.NombreComprador }}</div>
+              <div class="text-xs text-[#7A3E24] break-all">{{ order.EmailComprador }}</div>
+            </td>
+            <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ order.NombreProducto || getNombreProducto(order.IDProducto) }}</td>
+            <td class="px-4 sm:px-6 py-4">
+              <span class="text-xs px-3 py-1 rounded-full font-medium transition-all duration-200 bg-[#F2E3D2] text-[#5E3D2A]">
+                {{ getTipoProductoLabel(order.TipoOrden) }}
+              </span>
+            </td>
+            <td class="px-4 sm:px-6 py-4 text-sm text-[#5E3D2A]">{{ formatearFecha(order.FechaOrden) }}</td>
+            <td class="px-4 sm:px-6 py-4">
+              <span class="text-xs px-3 py-1 rounded-full font-medium transition-all duration-200 {{ getEstadoColor(order.Estado) }}">
+                {{ getEstadoLabel(order.Estado) }}
+              </span>
+            </td>
+            <td class="px-4 sm:px-6 py-4 font-semibold text-[#3D2212]">
+              {{ order.PrecioTotal | currency:'MXN':'symbol':'1.0-0' }}
+            </td>
+            <td class="px-4 sm:px-6 py-4">
+              <div class="flex flex-wrap gap-2">
+                <button *ngIf="order.Estado === 'pendiente'"
+                        (click)="actualizarEstado(order, 'pagada')"
+                        [disabled]="updatingId === order.ID"
+                        class="social-icon-approve w-9 h-9 rounded-full transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Marcar como pagada">
+                  <span class="text-lg">✅</span>
+                </button>
+                <button *ngIf="order.Estado === 'pendiente' || order.Estado === 'pagada'"
+                        (click)="actualizarEstado(order, 'cancelada')"
+                        [disabled]="updatingId === order.ID"
+                        class="social-icon-cancel w-9 h-9 rounded-full transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Cancelar orden">
+                  <span class="text-lg">❌</span>
+                </button>
+                <button *ngIf="order.Estado === 'pagada'"
+                        (click)="actualizarEstado(order, 'reembolsada')"
+                        [disabled]="updatingId === order.ID"
+                        class="social-icon-refund w-9 h-9 rounded-full transition-all duration-300 flex items-center justify-center hover:scale-110 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Reembolsar">
+                  <span class="text-lg">↩️</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Paginación -->
+    <div class="px-4 sm:px-6 py-4 border-t border-[#D7BBA4]/60 bg-[#FAF2E8] flex flex-col sm:flex-row justify-between items-center gap-4">
+      <span class="text-sm text-[#5E3D2A]">
+        Mostrando {{ orders.length }} órdenes
+        <span *ngIf="offset > 0"> (desde #{{ offset + 1 }})</span>
+      </span>
+      <div class="flex gap-2">
+        <button (click)="cambiarPagina(-1)" [disabled]="offset === 0 || loading"
+                class="rounded-full border-2 border-[#C9B29B] bg-white px-6 py-2 text-sm font-semibold text-[#7A3E24] transition-all duration-300 hover:bg-[#F8EEE2] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+          ← Anterior
+        </button>
+        <button (click)="cambiarPagina(1)" [disabled]="orders.length < limit || loading"
+                class="rounded-full border-2 border-[#C9B29B] bg-white px-6 py-2 text-sm font-semibold text-[#7A3E24] transition-all duration-300 hover:bg-[#F8EEE2] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+          Siguiente →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    ⚠️ {{ errorMessage }}
+  </div>
+</section>
+
+<!-- Modal para crear nuevo producto -->
 <div *ngIf="modalProductoAbierto" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-    <h3 class="text-xl font-bold text-[#3D2212] mb-4">Nuevo Producto</h3>
+  <div class="bg-white rounded-[32px] max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto border border-[#D7BBA4]/80">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-2xl">➕</span>
+      <div>
+        <h3 class="text-xl font-semibold text-[#3D2212]">Nuevo Producto</h3>
+        <p class="text-xs text-[#5E3D2A]/70">Registra un nuevo producto en el catálogo</p>
+      </div>
+    </div>
+
     <form (ngSubmit)="crearProducto()" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Tipo *</label>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Tipo *</label>
         <select [(ngModel)]="nuevoProducto.tipo_producto" name="tipoProducto"
-                class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
+                class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer">
           <option value="cama_cafe">Cama de café</option>
           <option value="suscripcion">Suscripción</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Nombre *</label>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Nombre *</label>
         <input type="text" [(ngModel)]="nuevoProducto.nombre" name="nombre"
-               class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-               required>
+               class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+               required placeholder="Ej: Café Gourmet">
       </div>
       <div>
-        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Descripción</label>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Descripción</label>
         <textarea [(ngModel)]="nuevoProducto.descripcion" name="descripcion" rows="2"
-                  class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"></textarea>
+                  class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                  placeholder="Descripción del producto"></textarea>
       </div>
       <div>
-        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Precio (MXN) *</label>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Precio (MXN) *</label>
         <input type="number" [(ngModel)]="nuevoProducto.precio" name="precio"
-               class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-               required min="0" step="0.01">
+               class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+               required min="0" step="0.01" placeholder="0.00">
       </div>
       <div>
-        <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Imagen URL</label>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Imagen URL</label>
         <input type="text" [(ngModel)]="nuevoProducto.imagen_url" name="imagenUrl"
-               class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-               placeholder="https://...">
+               class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+               placeholder="https://ejemplo.com/imagen.jpg">
       </div>
       
       <!-- Campos específicos: Cama de café -->
       <div *ngIf="nuevoProducto.tipo_producto === 'cama_cafe'" class="border-t border-[#D7BBA4] pt-4 space-y-3">
-        <h4 class="font-medium text-[#3D2212] text-sm">Datos de la cama de café</h4>
+        <h4 class="font-medium text-[#3D2212] text-sm">☕ Datos de la cama de café</h4>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Variedad</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Variedad</label>
           <input type="text" [(ngModel)]="nuevoProducto.variedad" name="variedad"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 placeholder="Ej: Arábica">
         </div>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Peso (kg) *</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Peso (kg) *</label>
           <input type="number" [(ngModel)]="nuevoProducto.peso_kg" name="pesoKg"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                 min="0" step="0.1">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 min="0" step="0.1" placeholder="0.0">
         </div>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Stock *</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Stock *</label>
           <input type="number" [(ngModel)]="nuevoProducto.stock" name="stock"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                 min="0">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 min="0" placeholder="1">
         </div>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">ID Lote (opcional)</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">ID Lote (opcional)</label>
           <input type="number" [(ngModel)]="nuevoProducto.id_lote" name="idLote"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                 min="0">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 min="0" placeholder="0">
         </div>
       </div>
 
       <!-- Campos específicos: Suscripción -->
       <div *ngIf="nuevoProducto.tipo_producto === 'suscripcion'" class="border-t border-[#D7BBA4] pt-4 space-y-3">
-        <h4 class="font-medium text-[#3D2212] text-sm">Datos de la suscripción</h4>
+        <h4 class="font-medium text-[#3D2212] text-sm">📋 Datos de la suscripción</h4>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Plan *</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Plan *</label>
           <input type="text" [(ngModel)]="nuevoProducto.plan_suscripcion" name="plan"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                 placeholder="Premium, Básico, etc.">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 placeholder="Ej: Premium, Básico">
         </div>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Duración (días) *</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Duración (días) *</label>
           <input type="number" [(ngModel)]="nuevoProducto.duracion_dias" name="duracion"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                 min="1">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 min="1" placeholder="30">
         </div>
         <div>
-          <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Lotes máximos</label>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Lotes máximos</label>
           <input type="number" [(ngModel)]="nuevoProducto.lotes_max" name="lotesMax"
-                 class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-2 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
-                 min="0">
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 min="0" placeholder="0">
         </div>
       </div>
 
       <div class="flex items-center gap-2">
         <input type="checkbox" [(ngModel)]="nuevoProducto.activo" name="activo"
-               class="rounded border-[#C9B29B] text-[#7A3E24]">
+               class="rounded border-[#C9B29B] text-[#7A3E24] focus:ring-[#7A3E24]">
         <label class="text-sm text-[#5E3D2A]">Activo (disponible para venta)</label>
       </div>
 
       <div class="flex gap-3 mt-6">
         <button type="submit" [disabled]="creandoProducto"
-                class="flex-1 bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors disabled:opacity-50">
+                class="flex-1 rounded-full bg-[#75341A] px-6 py-3.5 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
           {{ creandoProducto ? 'Creando...' : 'Crear Producto' }}
         </button>
         <button type="button" (click)="cerrarModalProducto()"
-                class="flex-1 border border-[#C9B29B] text-[#5E3D2A] py-2 rounded-xl font-medium hover:bg-[#F2E3D2] transition-colors">
+                class="flex-1 rounded-full border-2 border-[#C9B29B] bg-white px-6 py-3.5 text-sm font-semibold text-[#7A3E24] transition-all duration-300 hover:bg-[#F8EEE2] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
           Cancelar
         </button>
       </div>
     </form>
   </div>
 </div>
+
+<!-- Estilos adicionales para los botones estilo redes sociales -->
+<style>
+  .social-icon-approve {
+    background: rgba(16, 185, 129, 0.08);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+  }
+  
+  .social-icon-approve:hover {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: #10B981;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+  }
+
+  .social-icon-cancel {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+  }
+  
+  .social-icon-cancel:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #EF4444;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+  }
+
+  .social-icon-refund {
+    background: rgba(107, 114, 128, 0.08);
+    color: #6B7280;
+    border: 1px solid rgba(107, 114, 128, 0.15);
+  }
+  
+  .social-icon-refund:hover {
+    background: rgba(107, 114, 128, 0.15);
+    border-color: #6B7280;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 114, 128, 0.2);
+  }
+
+  .social-icon-approve:active,
+  .social-icon-cancel:active,
+  .social-icon-refund:active {
+    transform: scale(0.95);
+  }
+</style>
