@@ -1,6 +1,6 @@
-// order-page.component.ts - CORREGIDO (fix NG0100 + fix "se queda cargando")
-import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+// order-page.component.ts - CORREGIDO (fix NG0100 + fix "se queda cargando" + fix SSR)
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -21,6 +21,8 @@ export class OrderPageComponent implements OnInit, OnDestroy {
   private paymentService = inject(PaymentService);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   private subscriptions: Subscription[] = [];
 
@@ -116,6 +118,9 @@ export class OrderPageComponent implements OnInit, OnDestroy {
   }
 
   scrollToForm() {
+    // document no existe en el servidor durante SSR/prerender
+    if (!this.isBrowser) return;
+
     const element = document.getElementById('checkout-form');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -160,7 +165,10 @@ export class OrderPageComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.toastr.success('Redirigiendo a Stripe Checkout...');
         if (response.checkout_url) {
-          window.location.href = response.checkout_url;
+          // window no existe en el servidor durante SSR/prerender
+          if (this.isBrowser) {
+            window.location.href = response.checkout_url;
+          }
         } else {
           this.errorMessage = 'No se pudo obtener la URL de pago.';
           this.toastr.error('No se pudo obtener la URL de pago');
