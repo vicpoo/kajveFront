@@ -1,6 +1,6 @@
 // users-page.component.ts
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../../services/user.service';
@@ -40,6 +40,8 @@ interface UserFormState {
 export class UsersPageComponent implements OnInit {
   private userService = inject(UserService);
   private toastr = inject(ToastrService);
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   private usersSignal = signal<UserRow[]>([]);
   private adminsSignal = signal<AdminRow[]>([]);
@@ -172,6 +174,9 @@ export class UsersPageComponent implements OnInit {
   }
 
   async eliminarUsuario(userId: number) {
+    // window no existe en el servidor durante SSR/prerender
+    if (!this.isBrowser) return;
+
     const confirmed = window.confirm('⚠️ ¿Deseas eliminar este usuario? Esta acción no se puede deshacer.');
     if (!confirmed) {
       return;

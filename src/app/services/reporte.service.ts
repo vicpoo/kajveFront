@@ -1,5 +1,6 @@
-//src/app/services/reporte.service.ts
-import { Injectable, inject, signal } from '@angular/core';
+// src/app/services/reporte.service.ts
+import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ApiService } from './api.service';
 import { Reporte, GenerarReporteRequest } from '../interfaces/reporte.interface';
 import { lastValueFrom } from 'rxjs';
@@ -9,7 +10,9 @@ import { lastValueFrom } from 'rxjs';
 })
 export class ReporteService {
   private apiService = inject(ApiService);
-  
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
+
   // Estado reactivo
   reportes = signal<Reporte[]>([]);
   totalReportes = signal(0);
@@ -70,6 +73,9 @@ export class ReporteService {
    * Descarga y guarda un reporte
    */
   async descargarYGuardarReporte(id: number, nombreArchivo: string): Promise<void> {
+    // window y document no existen en el servidor durante SSR/prerender
+    if (!this.isBrowser) return;
+
     try {
       const blob = await this.descargarReporte(id);
       const url = window.URL.createObjectURL(blob);

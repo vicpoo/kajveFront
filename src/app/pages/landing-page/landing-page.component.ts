@@ -1,6 +1,6 @@
 // landing-page.component.ts
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -10,7 +10,13 @@ import { RouterLink } from '@angular/router';
   templateUrl: './landing-page.component.html'
 })
 export class LandingPageComponent {
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
+
   scrollTo(sectionId: string): void {
+    // document no existe en el servidor durante SSR/prerender
+    if (!this.isBrowser) return;
+
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
