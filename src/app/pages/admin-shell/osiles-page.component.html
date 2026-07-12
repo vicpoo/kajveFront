@@ -123,7 +123,16 @@
               {{ order.PrecioTotal | currency:'MXN':'symbol':'1.0-0' }}
             </td>
             <td class="px-4 sm:px-6 py-4">
-              <div class="flex flex-wrap gap-2">
+              <!-- Suscripciones: se gestionan SOLO por webhook de Stripe.
+                   Sin botones aquí a propósito — un cambio manual de
+                   estado no dispara la activación/expiración de premium,
+                   así que dejarlos habilitados solo invita a inconsistencias. -->
+              <div *ngIf="order.TipoOrden === 'suscripcion'" class="flex items-center gap-1.5 text-xs text-[#5E3D2A]/60 italic">
+                <span>🔒</span> Automático (Stripe)
+              </div>
+
+              <!-- Camas de café: sí se gestionan manualmente -->
+              <div *ngIf="order.TipoOrden !== 'suscripcion'" class="flex flex-wrap gap-2">
                 <button *ngIf="order.Estado === 'pendiente'"
                         (click)="actualizarEstado(order, 'pagada')"
                         [disabled]="updatingId === order.ID"

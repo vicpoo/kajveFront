@@ -36,12 +36,12 @@ export class LoginPageComponent {
 
     try {
       const success = await this.authService.login(email, password);
-      
+
       if (success) {
         this.messageType.set('success');
-        this.message.set('Bienvenido, accediendo al panel...');
+        this.message.set('Bienvenido, redirigiendo...');
         setTimeout(() => {
-          this.router.navigate(['/admin/dashboard']);
+          this.redirigirSegunRol();
         }, 300);
       } else {
         this.messageType.set('error');
@@ -52,6 +52,20 @@ export class LoginPageComponent {
       this.message.set(error.message || 'Error al iniciar sesión. Intenta nuevamente.');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  // Administrador y supervisor son staff interno -> panel de admin.
+  // Productor es quien compra/gestiona su cosecha -> lo mandamos directo
+  // a activar su plan premium, que es la acción que más le interesa
+  // justo después de loguearse.
+  private redirigirSegunRol(): void {
+    const rol = this.authService.getUser()?.rol;
+
+    if (rol === 'administrador' || rol === 'supervisor') {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.router.navigate(['/premium']);
     }
   }
 }

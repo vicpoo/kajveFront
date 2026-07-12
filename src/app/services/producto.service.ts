@@ -63,4 +63,13 @@ export class ProductoService {
       limit: 100
     });
   }
+
+  // Helper: Obtener los planes de suscripción (premium) activos
+  obtenerPlanesSuscripcion(): Observable<Producto[]> {
+    return this.listarProductos({
+      tipo_producto: 'suscripcion',
+      solo_activos: true,
+      limit: 100
+    });
+  }
 }

@@ -13,9 +13,24 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/order-page/order-page.component').then((m) => m.OrderPageComponent)
   },
   {
+    path: 'premium',
+    title: 'Premium',
+    loadComponent: () => import('./pages/premium-page/premium-page.component').then((m) => m.PremiumPageComponent)
+  },
+  {
     path: 'login',
     title: 'Iniciar sesión',
     loadComponent: () => import('./pages/login-page/login-page.component').then((m) => m.LoginPageComponent)
+  },
+  {
+    path: 'orden/exito',
+    title: 'Pago exitoso',
+    loadComponent: () => import('./pages/order-success-page/order-success-page.component').then((m) => m.OrderSuccessPageComponent)
+  },
+  {
+    path: 'orden/cancelada',
+    title: 'Pago cancelado',
+    loadComponent: () => import('./pages/order-cancel-page/order-cancel-page.component').then((m) => m.OrderCancelPageComponent)
   },
   {
     path: 'admin',

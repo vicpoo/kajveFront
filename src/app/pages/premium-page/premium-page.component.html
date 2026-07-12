@@ -1,0 +1,228 @@
+<!-- premium-page.component.html -->
+<!-- Navbar (mismo que order-page, consistencia de marca) -->
+<nav class="bg-[#6B3A23] shadow-lg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a routerLink="/" class="flex items-center gap-2">
+        <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
+        <span class="text-xl font-bold text-white">KAJVE</span>
+      </a>
+
+      <div class="hidden md:flex items-center space-x-6">
+        <a routerLink="/" class="text-white/80 hover:text-white transition-colors text-sm">Inicio</a>
+        <a routerLink="/login" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all">
+          Iniciar sesión
+        </a>
+      </div>
+
+      <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/10">
+      <div class="flex flex-col space-y-3">
+        <a routerLink="/" (click)="mobileMenuOpen = false" class="text-white/80 hover:text-white transition-colors">Inicio</a>
+        <a routerLink="/login" (click)="mobileMenuOpen = false" class="bg-white/20 text-white px-4 py-2 rounded-full text-center hover:bg-white/30 transition-all">Iniciar sesión</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="min-h-screen bg-[#F5EDE6]">
+  <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div class="text-sm text-[#7A3E24]/70 mb-4">
+      <span class="hover:text-[#7A3E24] cursor-pointer" routerLink="/">Inicio</span>
+      <span class="mx-2">›</span>
+      <span class="text-[#7A3E24]">Premium</span>
+    </div>
+
+    <!-- Banner de error global -->
+    <div *ngIf="errorMessage" class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 max-w-3xl mx-auto">
+      ⚠️ {{ errorMessage }}
+    </div>
+
+    <!-- Bloqueo por sesión: si no hay id_usuario, no dejamos avanzar al checkout -->
+    <div *ngIf="!loadingPlanes && !idUsuarioActual" class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 max-w-3xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+      <span>🔒 Necesitas iniciar sesión para activar un plan premium.</span>
+      <a routerLink="/login" class="bg-[#7A3E24] text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-[#5F2E19] transition-all whitespace-nowrap">
+        Iniciar sesión
+      </a>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loadingPlanes" class="bg-white rounded-2xl shadow-md p-10 border border-[#D7BBA4]/30 flex justify-center items-center gap-2 max-w-3xl mx-auto">
+      <svg class="animate-spin h-5 w-5 text-[#7A3E24]" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-[#5E3D2A]">Cargando planes...</span>
+    </div>
+
+    <!-- Sin planes -->
+    <div *ngIf="!loadingPlanes && !errorMessage && planes.length === 0"
+         class="bg-white rounded-2xl shadow-md p-10 border border-[#D7BBA4]/30 text-center text-[#5E3D2A] max-w-3xl mx-auto">
+      Todavía no hay planes premium configurados.
+    </div>
+
+    <!-- Pricing cards -->
+    <div *ngIf="!loadingPlanes && planes.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+      <div *ngFor="let plan of planes"
+           class="relative rounded-3xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+           [class.bg-white]="!plan.destacado"
+           [class.border]="!plan.destacado"
+           [class.border-[#D7BBA4]/40]="!plan.destacado"
+           [class.shadow-md]="!plan.destacado"
+           [class.hover:shadow-xl]="!plan.destacado"
+           [class.bg-gradient-to-br]="plan.destacado"
+           [class.from-[#3D2212]]="plan.destacado"
+           [class.via-[#5F2E19]]="plan.destacado"
+           [class.to-[#7A3E24]]="plan.destacado"
+           [class.shadow-2xl]="plan.destacado"
+           [class.scale-[1.03]]="plan.destacado">
+
+        <!-- Badge de destacado -->
+        <div *ngIf="plan.destacado" class="absolute top-0 right-0 bg-amber-400 text-[#3D2212] text-xs font-bold px-4 py-1.5 rounded-bl-2xl tracking-wide">
+          ✦ MÁS ELEGIDO
+        </div>
+
+        <div class="p-7 flex flex-col flex-1">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-1"
+             [class.text-[#7A3E24]]="!plan.destacado"
+             [class.text-amber-300]="plan.destacado">
+            {{ plan.plan_suscripcion || 'Plan' }}
+          </p>
+          <h3 class="text-xl font-bold mb-4"
+              [class.text-[#3D2212]]="!plan.destacado"
+              [class.text-white]="plan.destacado">
+            {{ plan.nombre }}
+          </h3>
+
+          <div class="flex items-end gap-1 mb-1">
+            <span class="text-4xl font-extrabold"
+                  [class.text-[#3D2212]]="!plan.destacado"
+                  [class.text-white]="plan.destacado">
+              {{ plan.precio | currency:'MXN':'symbol':'1.0-0' }}
+            </span>
+            <span class="text-sm mb-1"
+                  [class.text-[#5E3D2A]/70]="!plan.destacado"
+                  [class.text-white/60]="plan.destacado">
+              / {{ plan.meses === 1 ? 'mes' : plan.meses + ' meses' }}
+            </span>
+          </div>
+
+          <p class="text-xs mb-5"
+             [class.text-[#5E3D2A]/70]="!plan.destacado"
+             [class.text-white/60]="plan.destacado">
+            Equivale a {{ plan.precioPorMes | currency:'MXN':'symbol':'1.0-0' }} / mes
+            <span *ngIf="plan.ahorroPct > 0" class="ml-1 font-semibold"
+                  [class.text-emerald-600]="!plan.destacado"
+                  [class.text-emerald-300]="plan.destacado">
+              · ahorras {{ plan.ahorroPct | number:'1.0-0' }}%
+            </span>
+          </p>
+
+          <ul class="space-y-2.5 mb-7 flex-1">
+            <li class="flex items-start gap-2 text-sm"
+                [class.text-[#5E3D2A]]="!plan.destacado"
+                [class.text-white/85]="plan.destacado">
+              <span [class.text-[#7A3E24]]="!plan.destacado" [class.text-amber-300]="plan.destacado">✓</span>
+              Monitoreo avanzado de secado en tiempo real
+            </li>
+            <li class="flex items-start gap-2 text-sm"
+                [class.text-[#5E3D2A]]="!plan.destacado"
+                [class.text-white/85]="plan.destacado">
+              <span [class.text-[#7A3E24]]="!plan.destacado" [class.text-amber-300]="plan.destacado">✓</span>
+              Hasta {{ plan.lotes_max }} lotes activos simultáneos
+            </li>
+            <li class="flex items-start gap-2 text-sm"
+                [class.text-[#5E3D2A]]="!plan.destacado"
+                [class.text-white/85]="plan.destacado">
+              <span [class.text-[#7A3E24]]="!plan.destacado" [class.text-amber-300]="plan.destacado">✓</span>
+              Reportes y alertas con prioridad
+            </li>
+          </ul>
+
+          <button (click)="seleccionarPlan(plan)"
+                  [disabled]="!idUsuarioActual"
+                  class="w-full py-3 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  [class.bg-[#7A3E24]]="!plan.destacado"
+                  [class.text-white]="!plan.destacado"
+                  [class.hover:bg-[#5F2E19]]="!plan.destacado"
+                  [class.bg-amber-400]="plan.destacado"
+                  [class.text-[#3D2212]]="plan.destacado"
+                  [class.hover:bg-amber-300]="plan.destacado">
+            {{ planSeleccionadoId === plan.id_producto ? '✓ Seleccionado' : 'Elegir plan' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de compra -->
+    <div id="checkout-form" *ngIf="idUsuarioActual" class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30 max-w-2xl mx-auto">
+      <h3 class="font-bold text-[#3D2212] text-lg mb-1">Completa tu compra</h3>
+      <p class="text-sm text-[#5E3D2A]/70 mb-4" *ngIf="planSeleccionado">
+        Plan seleccionado: <span class="font-semibold text-[#7A3E24]">{{ planSeleccionado.nombre }}</span> ·
+        {{ planSeleccionado.precio | currency:'MXN':'symbol':'1.0-0' }}
+      </p>
+
+      <form (ngSubmit)="submitOrder()" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-[#5E3D2A] mb-1">
+              Nombre completo <span class="text-red-500">*</span>
+            </label>
+            <input type="text" [(ngModel)]="name" name="name"
+                   class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                   placeholder="Tu nombre" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-[#5E3D2A] mb-1">
+              Correo electrónico <span class="text-red-500">*</span>
+            </label>
+            <input type="email" [(ngModel)]="email" name="email"
+                   class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                   placeholder="tu@email.com" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Teléfono</label>
+            <input type="tel" [(ngModel)]="phone" name="phone"
+                   class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                   placeholder="9611234567">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-[#5E3D2A] mb-1">País</label>
+            <input type="text" [(ngModel)]="country" name="country"
+                   class="w-full rounded-xl border border-[#C9B29B] bg-[#F2E3D2] px-4 py-3 text-[#3D2212] outline-none focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20"
+                   placeholder="MX">
+          </div>
+        </div>
+
+        <div *ngIf="successMessage" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          ✅ {{ successMessage }}
+        </div>
+
+        <button type="submit" [disabled]="loading || !planSeleccionadoId"
+                class="w-full bg-gradient-to-r from-[#7A3E24] to-[#5F2E19] text-white py-4 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-lg">
+          <span *ngIf="loading" class="flex items-center justify-center gap-2">
+            <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Procesando...
+          </span>
+          <span *ngIf="!loading">✦ Activar premium y pagar con Stripe</span>
+        </button>
+
+        <p class="text-center text-xs text-[#5E3D2A]/60">
+          🔒 Tus datos están seguros. El pago se procesa a través de Stripe.
+        </p>
+      </form>
+    </div>
+  </div>
+</main>

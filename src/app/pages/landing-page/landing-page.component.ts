@@ -48,11 +48,55 @@ export class LandingPageComponent {
     'Alertas'
   ];
 
-  premiumFeatures = [
-    'Todo lo que incluye Freemium',
-    'Predicciones con IA',
-    'Historial de datos',
-    'Reportes en PDF y Excel'
+  // Los 3 planes premium reales, con el mismo precio-por-mes y % de
+  // ahorro que calcula premium-page.component.ts, pero fijos aquí
+  // porque en el landing es solo contenido de marketing (no necesita
+  // pegarle al catálogo para mostrarse). El botón de cada uno manda a
+  // /premium, que sí lee los productos reales del backend.
+  premiumPlans = [
+    {
+      plan: 'Mensual',
+      nombre: 'Premium Mensual',
+      precio: 99,
+      periodo: '/ mes',
+      precioPorMes: 99,
+      ahorro: 0,
+      destacado: false,
+      features: [
+        'Todo lo que incluye Freemium',
+        'Predicciones con IA',
+        'Historial de datos',
+        'Reportes en PDF y Excel'
+      ]
+    },
+    {
+      plan: 'Trimestral',
+      nombre: 'Premium Trimestral',
+      precio: 290,
+      periodo: '/ 3 meses',
+      precioPorMes: 96.67,
+      ahorro: 2,
+      destacado: false,
+      features: [
+        'Todo lo del plan Mensual',
+        'Prioridad en soporte',
+        'Reportes comparativos entre lotes'
+      ]
+    },
+    {
+      plan: 'Anual',
+      nombre: 'Premium Anual',
+      precio: 1100,
+      periodo: '/ año',
+      precioPorMes: 91.67,
+      ahorro: 7,
+      destacado: true,
+      features: [
+        'Todo lo del plan Trimestral',
+        'El mejor precio por mes',
+        'Acceso anticipado a nuevas funciones'
+      ]
+    }
   ];
 
   technologies = [

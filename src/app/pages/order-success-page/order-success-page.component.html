@@ -1,0 +1,98 @@
+<!-- order-success-page.component.html -->
+<style>
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.85) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .pop-in { animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  @keyframes checkDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  .check-path {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: checkDraw 0.6s 0.3s ease-out forwards;
+  }
+
+  @keyframes ringPulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35); }
+    100% { box-shadow: 0 0 0 18px rgba(16, 185, 129, 0); }
+  }
+  .ring-pulse { animation: ringPulse 1.6s ease-out infinite; }
+</style>
+
+<!-- Navbar (misma línea visual que premium-page) -->
+<nav class="bg-[#6B3A23] shadow-lg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a routerLink="/" class="flex items-center gap-2">
+        <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
+        <span class="text-xl font-bold text-white">KAJVE</span>
+      </a>
+
+      <div class="hidden md:flex items-center space-x-6">
+        <a routerLink="/" class="text-white/80 hover:text-white transition-colors text-sm">Inicio</a>
+        <a routerLink="/premium" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all">
+          Mi cuenta
+        </a>
+      </div>
+
+      <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/10">
+      <div class="flex flex-col space-y-3">
+        <a routerLink="/" (click)="mobileMenuOpen = false" class="text-white/80 hover:text-white transition-colors">Inicio</a>
+        <a routerLink="/premium" (click)="mobileMenuOpen = false" class="bg-white/20 text-white px-4 py-2 rounded-full text-center hover:bg-white/30 transition-all">Mi cuenta</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="min-h-[calc(100vh-64px)] bg-[#F5EDE6] flex items-center justify-center px-4 py-16">
+  <div class="w-full max-w-lg pop-in">
+    <div class="bg-white rounded-3xl shadow-xl border border-[#D7BBA4]/30 p-8 sm:p-10 text-center">
+
+      <!-- Icono de éxito -->
+      <div class="flex justify-center mb-6">
+        <div class="ring-pulse w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center">
+          <svg class="w-10 h-10 text-emerald-500" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.5" opacity="0.25"/>
+            <path class="check-path" d="M7 12.5l3.2 3.2L17 9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <p class="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-2">Pago confirmado</p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#3D2212]">¡Gracias por tu compra!</h1>
+      <p class="text-[#5E3D2A]/80 mt-3 leading-relaxed">
+        Tu pago se procesó correctamente y tu plan ya está activo. Te enviamos la confirmación a tu correo.
+      </p>
+
+      <!-- Referencia de la sesión de Stripe, si viene en la URL -->
+      <div *ngIf="sessionId" class="mt-6 bg-[#F5EDE6] rounded-xl border border-[#D7BBA4]/40 px-4 py-3 text-left">
+        <p class="text-xs font-medium text-[#5E3D2A]/60 uppercase tracking-wide">Referencia de pago</p>
+        <p class="text-sm text-[#3D2212] font-mono break-all mt-1">{{ sessionId }}</p>
+      </div>
+
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <a routerLink="/premium" class="bg-[#7A3E24] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#5F2E19] transition-all shadow-md hover:shadow-lg">
+          Ver mi plan
+        </a>
+        <a routerLink="/" class="border-2 border-[#7A3E24] text-[#7A3E24] px-6 py-3 rounded-full font-semibold hover:bg-[#7A3E24] hover:text-white transition-all">
+          Volver al inicio
+        </a>
+      </div>
+
+      <p class="text-xs text-[#5E3D2A]/50 mt-8">
+        ¿Algún problema con tu compra? Escríbenos a
+        <a href="mailto:reyhades2005@gmail.com" class="underline hover:text-[#5E3D2A]">reyhades2005@gmail.com</a>
+      </p>
+    </div>
+  </div>
+</main>

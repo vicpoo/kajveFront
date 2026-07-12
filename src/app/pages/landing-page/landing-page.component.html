@@ -147,6 +147,9 @@
         <button (click)="scrollTo('features')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Funciones</button>
         <button (click)="scrollTo('technologies')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Tecnología</button>
         <button (click)="scrollTo('pricing')" class="font-medium text-gray-700 hover:text-[#6B3A23] transition-colors">Planes</button>
+        <a routerLink="/premium" class="flex items-center gap-1.5 font-medium text-amber-700 hover:text-amber-800 transition-colors">
+          <span>✦</span> Premium
+        </a>
         <a routerLink="/login" class="bg-[#6B3A23] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#5A2E1A] transition-all shadow-md hover:shadow-lg">Login</a>
       </div>
       
@@ -168,6 +171,9 @@
         <button (click)="scrollTo('features'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Funciones</button>
         <button (click)="scrollTo('technologies'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Tecnología</button>
         <button (click)="scrollTo('pricing'); mobileMenuOpen = false" class="font-medium hover:text-[#6B3A23] transition-colors">Planes</button>
+        <a routerLink="/premium" (click)="mobileMenuOpen = false" class="flex items-center gap-1.5 font-medium text-amber-700 hover:text-amber-800 transition-colors">
+          <span>✦</span> Premium
+        </a>
         <a routerLink="/login" (click)="mobileMenuOpen = false" class="bg-[#6B3A23] text-white px-6 py-3 rounded-full font-medium hover:bg-[#5A2E1A] transition-colors w-full text-center">Login</a>
       </div>
     </div>
@@ -311,39 +317,85 @@
         <h2 class="text-3xl md:text-5xl font-bold text-center text-[#6B3A23] tracking-tight">Planes para cada etapa</h2>
         <p class="text-center text-lg text-gray-700 mt-4">Elige el plan que se ajuste al tamaño de tu operación.</p>
       </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-16">
-        <!-- Freemium -->
-        <div class="bg-[#F5EDE6] rounded-3xl p-8 transition-all duration-300 border border-[#6B3A23]/10 card-shadow-lg hover:shadow-2xl fade-in-up delay-100">
-          <h3 class="text-2xl font-bold text-[#6B3A23]">Freemium</h3>
-          <div class="mt-4">
-            <span class="text-4xl font-bold text-[#6B3A23]">$0</span>
-            <span class="text-sm text-gray-500 ml-1">siempre gratis</span>
-          </div>
-          <ul class="mt-8 space-y-4">
-            <li *ngFor="let feature of freemiumFeatures" class="flex items-center gap-3 text-gray-700">
-              <span class="text-[#6B3A23] text-xl">✓</span>
-              {{ feature }}
-            </li>
-          </ul>
-        </div>
 
-        <!-- Premium -->
-        <div class="bg-[#6B3A23] rounded-3xl p-8 transition-all duration-300 text-white relative overflow-hidden card-shadow-lg hover:shadow-2xl fade-in-up delay-200">
-          <div class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl text-sm font-medium">
-            ⭐ Más popular
+      <!-- Freemium: banner introductorio de ancho completo, no compite -->
+      <!-- visualmente con los planes de pago que sí son el foco de conversión -->
+      <div class="max-w-4xl mx-auto mt-16 fade-in-up">
+        <div class="bg-[#F5EDE6] rounded-2xl px-8 py-6 border border-[#6B3A23]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-bold text-[#6B3A23]">Freemium — $0, siempre gratis</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Lotes ilimitados, monitoreo en tiempo real, sensores y alertas. Sin tarjeta, sin compromiso.
+            </p>
           </div>
-          <h3 class="text-2xl font-bold">Premium</h3>
-          <div class="mt-4">
-            <span class="text-4xl font-bold">$230</span>
-            <span class="text-sm text-white/70 ml-1">por mes</span>
+          <a routerLink="/order" class="whitespace-nowrap border-2 border-[#6B3A23] text-[#6B3A23] px-6 py-2.5 rounded-full font-medium hover:bg-[#6B3A23] hover:text-white transition-all">
+            Empezar gratis
+          </a>
+        </div>
+      </div>
+
+      <!-- Los 3 planes premium reales -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-8 items-stretch">
+        <div *ngFor="let plan of premiumPlans; let i = index"
+             class="relative rounded-3xl p-8 flex flex-col transition-all duration-300 fade-in-up"
+             [class.delay-100]="i === 0"
+             [class.delay-200]="i === 1"
+             [class.delay-300]="i === 2"
+             [class.bg-white]="!plan.destacado"
+             [class.border]="!plan.destacado"
+             [class.border-[#6B3A23]/10]="!plan.destacado"
+             [class.card-shadow-lg]="!plan.destacado"
+             [class.hover:shadow-2xl]="!plan.destacado"
+             [class.bg-[#6B3A23]]="plan.destacado"
+             [class.text-white]="plan.destacado"
+             [class.card-shadow-lg]="plan.destacado"
+             [class.scale-[1.03]]="plan.destacado">
+
+          <div *ngIf="plan.destacado" class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl text-sm font-medium">
+            ⭐ Mejor precio
           </div>
-          <ul class="mt-8 space-y-4">
-            <li *ngFor="let feature of premiumFeatures" class="flex items-center gap-3 text-white/90">
-              <span class="text-white text-xl">✓</span>
+
+          <p class="text-xs font-semibold uppercase tracking-widest mb-1"
+             [class.text-[#6B3A23]]="!plan.destacado"
+             [class.text-white/70]="plan.destacado">
+            {{ plan.plan }}
+          </p>
+          <h3 class="text-2xl font-bold" [class.text-[#6B3A23]]="!plan.destacado">{{ plan.nombre }}</h3>
+
+          <div class="mt-4 flex items-end gap-1">
+            <span class="text-4xl font-bold" [class.text-[#6B3A23]]="!plan.destacado">
+              {{ plan.precio | currency:'MXN':'symbol':'1.0-0' }}
+            </span>
+            <span class="text-sm mb-1" [class.text-gray-500]="!plan.destacado" [class.text-white/70]="plan.destacado">
+              {{ plan.periodo }}
+            </span>
+          </div>
+
+          <p class="text-xs mt-1" [class.text-gray-500]="!plan.destacado" [class.text-white/60]="plan.destacado">
+            Equivale a {{ plan.precioPorMes | currency:'MXN':'symbol':'1.0-0' }} / mes
+            <span *ngIf="plan.ahorro > 0" class="font-semibold" [class.text-emerald-600]="!plan.destacado" [class.text-emerald-300]="plan.destacado">
+              · ahorras {{ plan.ahorro }}%
+            </span>
+          </p>
+
+          <ul class="mt-8 space-y-4 flex-1">
+            <li *ngFor="let feature of plan.features" class="flex items-center gap-3 text-sm"
+                [class.text-gray-700]="!plan.destacado" [class.text-white/90]="plan.destacado">
+              <span class="text-xl" [class.text-[#6B3A23]]="!plan.destacado" [class.text-white]="plan.destacado">✓</span>
               {{ feature }}
             </li>
           </ul>
+
+          <a routerLink="/premium"
+             class="mt-8 block text-center py-3 rounded-xl font-semibold transition-all"
+             [class.bg-[#6B3A23]]="!plan.destacado"
+             [class.text-white]="!plan.destacado"
+             [class.hover:bg-[#5A2E1A]]="!plan.destacado"
+             [class.bg-white]="plan.destacado"
+             [class.text-[#6B3A23]]="plan.destacado"
+             [class.hover:bg-gray-100]="plan.destacado">
+            Elegir plan
+          </a>
         </div>
       </div>
     </div>
