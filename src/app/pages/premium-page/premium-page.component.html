@@ -7,21 +7,18 @@
         <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
         <span class="text-xl font-bold text-white">KAJVE</span>
       </a>
-
       <div class="hidden md:flex items-center space-x-6">
         <a routerLink="/" class="text-white/80 hover:text-white transition-colors text-sm">Inicio</a>
         <a routerLink="/login" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all">
           Iniciar sesión
         </a>
       </div>
-
       <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     </div>
-
     <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/10">
       <div class="flex flex-col space-y-3">
         <a routerLink="/" (click)="mobileMenuOpen = false" class="text-white/80 hover:text-white transition-colors">Inicio</a>
@@ -30,7 +27,6 @@
     </div>
   </div>
 </nav>
-
 <main class="min-h-screen bg-[#F5EDE6]">
   <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
     <div class="text-sm text-[#7A3E24]/70 mb-4">
@@ -38,12 +34,10 @@
       <span class="mx-2">›</span>
       <span class="text-[#7A3E24]">Premium</span>
     </div>
-
     <!-- Banner de error global -->
     <div *ngIf="errorMessage" class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 max-w-3xl mx-auto">
       ⚠️ {{ errorMessage }}
     </div>
-
     <!-- Bloqueo por sesión: si no hay id_usuario, no dejamos avanzar al checkout -->
     <div *ngIf="!loadingPlanes && !idUsuarioActual" class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 max-w-3xl mx-auto flex items-center justify-between gap-4 flex-wrap">
       <span>🔒 Necesitas iniciar sesión para activar un plan premium.</span>
@@ -51,7 +45,6 @@
         Iniciar sesión
       </a>
     </div>
-
     <!-- Loading -->
     <div *ngIf="loadingPlanes" class="bg-white rounded-2xl shadow-md p-10 border border-[#D7BBA4]/30 flex justify-center items-center gap-2 max-w-3xl mx-auto">
       <svg class="animate-spin h-5 w-5 text-[#7A3E24]" viewBox="0 0 24 24">
@@ -60,13 +53,11 @@
       </svg>
       <span class="text-[#5E3D2A]">Cargando planes...</span>
     </div>
-
     <!-- Sin planes -->
     <div *ngIf="!loadingPlanes && !errorMessage && planes.length === 0"
          class="bg-white rounded-2xl shadow-md p-10 border border-[#D7BBA4]/30 text-center text-[#5E3D2A] max-w-3xl mx-auto">
       Todavía no hay planes premium configurados.
     </div>
-
     <!-- Pricing cards -->
     <div *ngIf="!loadingPlanes && planes.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
       <div *ngFor="let plan of planes"
@@ -82,12 +73,10 @@
            [class.to-[#7A3E24]]="plan.destacado"
            [class.shadow-2xl]="plan.destacado"
            [class.scale-[1.03]]="plan.destacado">
-
         <!-- Badge de destacado -->
         <div *ngIf="plan.destacado" class="absolute top-0 right-0 bg-amber-400 text-[#3D2212] text-xs font-bold px-4 py-1.5 rounded-bl-2xl tracking-wide">
           ✦ MÁS ELEGIDO
         </div>
-
         <div class="p-7 flex flex-col flex-1">
           <p class="text-xs font-semibold uppercase tracking-widest mb-1"
              [class.text-[#7A3E24]]="!plan.destacado"
@@ -99,7 +88,6 @@
               [class.text-white]="plan.destacado">
             {{ plan.nombre }}
           </h3>
-
           <div class="flex items-end gap-1 mb-1">
             <span class="text-4xl font-extrabold"
                   [class.text-[#3D2212]]="!plan.destacado"
@@ -112,7 +100,6 @@
               / {{ plan.meses === 1 ? 'mes' : plan.meses + ' meses' }}
             </span>
           </div>
-
           <p class="text-xs mb-5"
              [class.text-[#5E3D2A]/70]="!plan.destacado"
              [class.text-white/60]="plan.destacado">
@@ -123,7 +110,6 @@
               · ahorras {{ plan.ahorroPct | number:'1.0-0' }}%
             </span>
           </p>
-
           <ul class="space-y-2.5 mb-7 flex-1">
             <li class="flex items-start gap-2 text-sm"
                 [class.text-[#5E3D2A]]="!plan.destacado"
@@ -144,7 +130,6 @@
               Reportes y alertas con prioridad
             </li>
           </ul>
-
           <button (click)="seleccionarPlan(plan)"
                   [disabled]="!idUsuarioActual"
                   class="w-full py-3 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -159,7 +144,6 @@
         </div>
       </div>
     </div>
-
     <!-- Formulario de compra -->
     <div id="checkout-form" *ngIf="idUsuarioActual" class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30 max-w-2xl mx-auto">
       <h3 class="font-bold text-[#3D2212] text-lg mb-1">Completa tu compra</h3>
@@ -167,7 +151,6 @@
         Plan seleccionado: <span class="font-semibold text-[#7A3E24]">{{ planSeleccionado.nombre }}</span> ·
         {{ planSeleccionado.precio | currency:'MXN':'symbol':'1.0-0' }}
       </p>
-
       <form (ngSubmit)="submitOrder()" class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -187,7 +170,6 @@
                    placeholder="tu@email.com" required>
           </div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Teléfono</label>
@@ -202,11 +184,36 @@
                    placeholder="MX">
           </div>
         </div>
-
         <div *ngIf="successMessage" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           ✅ {{ successMessage }}
         </div>
-
+        <!-- Métodos de pago aceptados en Stripe Checkout. OXXO y
+             transferencia SPEI son asíncronos: la orden se crea igual,
+             pero el backend NO activa es_premium hasta que Stripe
+             confirma el dinero (puede tardar hasta 4 días hábiles).
+             Mientras tanto el plan queda 'pendiente' de activación. -->
+        <div class="rounded-xl bg-[#F2E3D2]/60 border border-[#D7BBA4]/40 px-5 py-4">
+          <p class="text-[11px] font-semibold text-[#3D2212] uppercase tracking-widest mb-3">
+            Métodos de pago disponibles
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-0">
+            <div class="sm:pr-4">
+              <p class="text-sm font-semibold text-[#3D2212]">Tarjeta</p>
+              <p class="text-xs text-[#5E3D2A]/70 mt-0.5">Activación inmediata</p>
+            </div>
+            <div class="sm:px-4 sm:border-l sm:border-[#D7BBA4]/60">
+              <p class="text-sm font-semibold text-[#3D2212]">OXXO</p>
+              <p class="text-xs text-[#5E3D2A]/70 mt-0.5">Hasta 4 días hábiles</p>
+            </div>
+            <div class="sm:pl-4 sm:border-l sm:border-[#D7BBA4]/60">
+              <p class="text-sm font-semibold text-[#3D2212]">Transferencia SPEI</p>
+              <p class="text-xs text-[#5E3D2A]/70 mt-0.5">1 a 3 días hábiles</p>
+            </div>
+          </div>
+          <p class="text-xs text-[#5E3D2A]/70 leading-relaxed border-t border-[#D7BBA4]/50 mt-3 pt-3">
+            Con OXXO o transferencia, tu premium se activa automáticamente en cuanto Stripe confirme el pago.
+          </p>
+        </div>
         <button type="submit" [disabled]="loading || !planSeleccionadoId"
                 class="w-full bg-gradient-to-r from-[#7A3E24] to-[#5F2E19] text-white py-4 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-lg">
           <span *ngIf="loading" class="flex items-center justify-center gap-2">
@@ -218,7 +225,6 @@
           </span>
           <span *ngIf="!loading">✦ Activar premium y pagar con Stripe</span>
         </button>
-
         <p class="text-center text-xs text-[#5E3D2A]/60">
           🔒 Tus datos están seguros. El pago se procesa a través de Stripe.
         </p>

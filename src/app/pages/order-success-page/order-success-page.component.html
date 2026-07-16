@@ -58,7 +58,9 @@
   <div class="w-full max-w-lg pop-in">
     <div class="bg-white rounded-3xl shadow-xl border border-[#D7BBA4]/30 p-8 sm:p-10 text-center">
 
-      <!-- Icono de éxito -->
+      <!-- Icono: seguimos celebrando que el pedido se registró, pero ya
+           no afirmamos "pago confirmado" — con OXXO/transferencia
+           Stripe manda aquí ANTES de que el dinero llegue. -->
       <div class="flex justify-center mb-6">
         <div class="ring-pulse w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center">
           <svg class="w-10 h-10 text-emerald-500" viewBox="0 0 24 24" fill="none">
@@ -68,10 +70,14 @@
         </div>
       </div>
 
-      <p class="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-2">Pago confirmado</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-2">Pedido recibido</p>
       <h1 class="text-2xl sm:text-3xl font-bold text-[#3D2212]">¡Gracias por tu compra!</h1>
       <p class="text-[#5E3D2A]/80 mt-3 leading-relaxed">
-        Tu pago se procesó correctamente y tu plan ya está activo. Te enviamos la confirmación a tu correo.
+        Tu pedido quedó registrado con Stripe. Si pagaste con tarjeta, tu compra (o tu plan premium) ya debería
+        estar activa. Si elegiste <span class="font-semibold text-[#3D2212]">OXXO</span> o
+        <span class="font-semibold text-[#3D2212]">transferencia bancaria (SPEI)</span>, todavía falta que
+        completes el pago con el voucher o la CLABE que te mostró Stripe — en cuanto se confirme (hasta 4 días
+        hábiles), activamos todo automáticamente y te avisamos por correo.
       </p>
 
       <!-- Referencia de la sesión de Stripe, si viene en la URL -->

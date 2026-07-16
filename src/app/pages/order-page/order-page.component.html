@@ -7,21 +7,18 @@
         <img src="assets/logo_kajve.jpeg" alt="KAJVE" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20">
         <span class="text-xl font-bold text-white">KAJVE</span>
       </a>
-
       <div class="hidden md:flex items-center space-x-6">
         <a routerLink="/" class="text-white/80 hover:text-white transition-colors text-sm">Inicio</a>
         <a routerLink="/login" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all">
           Iniciar sesión
         </a>
       </div>
-
       <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     </div>
-
     <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/10">
       <div class="flex flex-col space-y-3">
         <a routerLink="/" (click)="mobileMenuOpen = false" class="text-white/80 hover:text-white transition-colors">Inicio</a>
@@ -30,7 +27,6 @@
     </div>
   </div>
 </nav>
-
 <main class="min-h-screen bg-[#F5EDE6]">
   <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
     <div class="text-sm text-[#7A3E24]/70 mb-4">
@@ -38,12 +34,10 @@
       <span class="mx-2">›</span>
       <span class="text-[#7A3E24]">Comprar Osil</span>
     </div>
-
     <!-- Banner de error GLOBAL: arriba de todo, visible de inmediato -->
     <div *ngIf="errorMessage" class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
       ⚠️ {{ errorMessage }}
     </div>
-
     <div class="grid grid-cols-1 gap-6">
       <!-- Lista de productos - ahora ocupa todo el ancho -->
       <div>
@@ -52,7 +46,6 @@
             <span class="font-bold">{{ productosDisponibles.length }}</span> productos disponibles
           </p>
         </div>
-
         <!-- Estado: cargando catálogo -->
         <div *ngIf="loadingCatalogo" class="bg-white rounded-2xl shadow-md p-8 border border-[#D7BBA4]/30 flex justify-center items-center gap-2">
           <svg class="animate-spin h-5 w-5 text-[#7A3E24]" viewBox="0 0 24 24">
@@ -61,20 +54,17 @@
           </svg>
           <span class="text-[#5E3D2A]">Cargando catálogo...</span>
         </div>
-
         <!-- Estado: sin error, sin loading, pero 0 productos -->
         <div *ngIf="!loadingCatalogo && !errorMessage && productosDisponibles.length === 0"
              class="bg-white rounded-2xl shadow-md p-8 border border-[#D7BBA4]/30 text-center text-[#5E3D2A]">
           No hay camas de café disponibles en este momento.
         </div>
-
         <div *ngIf="!loadingCatalogo && productosDisponibles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div *ngFor="let producto of productosDisponibles"
                class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-[#D7BBA4]/30 hover:border-[#7A3E24]/30 cursor-pointer"
                (click)="seleccionarProducto(producto)"
                [class.ring-2]="productoSeleccionadoId === producto.id_producto"
                [class.ring-[#7A3E24]]="productoSeleccionadoId === producto.id_producto">
-
             <div class="relative h-48 bg-gradient-to-br from-[#F2E3D2] to-[#E8D5C4] flex items-center justify-center">
               <span class="text-6xl">☕</span>
               <div *ngIf="producto.stock <= 0" class="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -84,13 +74,11 @@
                 ✓ Seleccionado
               </div>
             </div>
-
             <div class="p-4">
               <h3 class="font-bold text-[#3D2212] text-lg truncate">{{ producto.nombre }}</h3>
               <p class="text-sm text-[#5E3D2A] line-clamp-2 h-10">{{ producto.descripcion }}</p>
               <p *ngIf="producto.variedad" class="text-xs text-[#7A3E24] mt-1">Variedad: {{ producto.variedad }}</p>
               <p *ngIf="producto.peso_kg" class="text-xs text-[#5E3D2A]">Peso: {{ producto.peso_kg }} kg</p>
-
               <div class="flex items-center justify-between mt-3">
                 <div>
                   <span class="text-2xl font-bold text-[#7A3E24]">{{ producto.precio | currency:'MXN':'symbol':'1.0-0' }}</span>
@@ -101,7 +89,6 @@
                   <span class="text-sm text-[#5E3D2A]">4.5</span>
                 </div>
               </div>
-
               <button *ngIf="producto.stock > 0"
                       (click)="$event.stopPropagation(); seleccionarProducto(producto)"
                       class="w-full mt-3 bg-[#7A3E24] text-white py-2 rounded-xl font-medium hover:bg-[#5F2E19] transition-colors text-sm">
@@ -114,7 +101,6 @@
             </div>
           </div>
         </div>
-
         <!-- Resumen de compra -->
         <div class="mt-6 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -134,11 +120,9 @@
             </button>
           </div>
         </div>
-
         <!-- Formulario de compra -->
         <div id="checkout-form" class="mt-6 bg-white rounded-2xl shadow-md p-6 border border-[#D7BBA4]/30">
           <h3 class="font-bold text-[#3D2212] text-lg mb-4">Completa tus datos</h3>
-
           <form (ngSubmit)="submitOrder()" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -158,7 +142,6 @@
                        placeholder="tu@email.com" required>
               </div>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-[#5E3D2A] mb-1">Teléfono</label>
@@ -173,11 +156,19 @@
                        placeholder="MX">
               </div>
             </div>
-
             <div *ngIf="successMessage" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
               ✅ {{ successMessage }}
             </div>
-
+            <!-- Métodos de pago aceptados en Stripe Checkout. OXXO y
+                 transferencia SPEI son asíncronos: la orden se crea
+                 igual, pero el backend NO la marca 'pagada' hasta que
+                 Stripe confirma el dinero (puede tardar hasta 4 días
+                 hábiles). Mientras tanto la orden queda 'pendiente'. -->
+            <div class="rounded-xl bg-[#F2E3D2]/60 border border-[#D7BBA4]/40 px-4 py-3 text-xs text-[#5E3D2A] space-y-1">
+              <p class="font-semibold text-[#3D2212]">Métodos de pago disponibles en Stripe:</p>
+              <p>💳 Tarjeta — confirmación inmediata · 🏪 OXXO (efectivo) — hasta 4 días hábiles · 🏦 Transferencia SPEI — 1 a 3 días hábiles</p>
+              <p>Si pagas en OXXO o por transferencia, tu pedido queda como <span class="font-semibold">pendiente</span> hasta que Stripe confirme el pago.</p>
+            </div>
             <button type="submit" [disabled]="loading || !productoSeleccionadoId"
                     class="w-full bg-[#7A3E24] text-white py-4 rounded-xl font-semibold hover:bg-[#5F2E19] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-lg">
               <span *ngIf="loading" class="flex items-center justify-center gap-2">
@@ -189,7 +180,6 @@
               </span>
               <span *ngIf="!loading">Confirmar pedido y pagar con Stripe</span>
             </button>
-
             <p class="text-center text-xs text-[#5E3D2A]/60">
               🔒 Tus datos están seguros. El pago se procesa a través de Stripe.
             </p>
