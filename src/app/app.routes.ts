@@ -1,5 +1,6 @@
 //app.routes.ts
 import { Routes } from '@angular/router';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,7 @@ export const routes: Routes = [
     path: 'admin',
     title: 'Admin',
     loadComponent: () => import('./pages/admin-shell/admin-shell.component').then((m) => m.AdminShellComponent),
+    canActivate: [adminGuard],
     children: [
       {
         path: '',
