@@ -9,11 +9,12 @@ import { PaymentService } from '../../services/payment.service';
 import { Producto } from '../../interfaces/producto.interface';
 import { CrearOrdenRequest } from '../../interfaces/payment.interface';
 import { Subscription } from 'rxjs';
+import { SessionNavComponent } from '../../molecules/session-nav/session-nav.component';
 
 @Component({
   selector: 'app-order-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SessionNavComponent],
   templateUrl: './order-page.component.html'
 })
 export class OrderPageComponent implements OnInit, OnDestroy {
@@ -87,6 +88,15 @@ export class OrderPageComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loadingCatalogo = false;
+
+        if (err.status === 401) {
+          // Invitado sin sesión (o sesión vencida): el interceptor ya
+          // redirige a /login con el mensaje correcto. No es un error
+          // del sistema, así que no mostramos banner ni toast aquí.
+          this.cdr.detectChanges();
+          return;
+        }
+
         console.error('[order-page] Error cargando catálogo:', err);
 
         if (err.status === 0) {

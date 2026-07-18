@@ -1,0 +1,42 @@
+<!-- session-nav.component.html -->
+<ng-container *ngIf="authService.isLoggedIn() && authService.loggedUser()?.rol === 'productor'; else loginLink">
+  <div [ngClass]="mobile ? 'flex items-center gap-3 w-full' : 'flex items-center gap-3'">
+    <div
+      class="flex items-center gap-2"
+      [ngClass]="variant === 'brand' ? 'text-gray-700' : 'text-white/90'"
+      title="Sesión iniciada"
+    >
+      <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+      <span class="text-sm font-medium max-w-[10rem] truncate">{{ authService.loggedUser()?.nombre || 'Mi cuenta' }}</span>
+    </div>
+    <button
+      type="button"
+      (click)="cerrarSesion()"
+      [ngClass]="variant === 'brand'
+        ? 'flex items-center gap-1.5 text-sm font-medium text-[#6B3A23] hover:text-[#5A2E1A] border border-[#6B3A23]/30 rounded-full px-3 py-1.5 transition-colors'
+        : 'flex items-center gap-1.5 text-sm font-medium text-white/90 hover:text-white border border-white/30 rounded-full px-3 py-1.5 transition-colors'"
+      title="Cerrar sesión"
+    >
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+      Cerrar sesión
+    </button>
+  </div>
+</ng-container>
+
+<ng-template #loginLink>
+  <a
+    routerLink="/login"
+    (click)="navigate.emit()"
+    [ngClass]="variant === 'brand'
+      ? (mobile
+          ? 'bg-[#6B3A23] text-white px-6 py-3 rounded-full font-medium hover:bg-[#5A2E1A] transition-colors w-full text-center'
+          : 'bg-[#6B3A23] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#5A2E1A] transition-all shadow-md hover:shadow-lg')
+      : (mobile
+          ? 'bg-white/20 text-white px-4 py-2 rounded-full text-center hover:bg-white/30 transition-all'
+          : 'bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-all')"
+  >{{ variant === 'brand' ? 'Login' : 'Iniciar sesión' }}</a>
+</ng-template>

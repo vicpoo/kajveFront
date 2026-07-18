@@ -150,7 +150,7 @@
         <a routerLink="/premium" class="flex items-center gap-1.5 font-medium text-amber-700 hover:text-amber-800 transition-colors">
           <span>✦</span> Premium
         </a>
-        <a routerLink="/login" class="bg-[#6B3A23] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#5A2E1A] transition-all shadow-md hover:shadow-lg">Login</a>
+        <app-session-nav variant="brand"></app-session-nav>
       </div>
       
       <!-- Mobile Menu Button -->
@@ -174,7 +174,7 @@
         <a routerLink="/premium" (click)="mobileMenuOpen = false" class="flex items-center gap-1.5 font-medium text-amber-700 hover:text-amber-800 transition-colors">
           <span>✦</span> Premium
         </a>
-        <a routerLink="/login" (click)="mobileMenuOpen = false" class="bg-[#6B3A23] text-white px-6 py-3 rounded-full font-medium hover:bg-[#5A2E1A] transition-colors w-full text-center">Login</a>
+        <app-session-nav variant="brand" [mobile]="true" (navigate)="mobileMenuOpen = false"></app-session-nav>
       </div>
     </div>
   </div>

@@ -11,11 +11,12 @@ import { Producto } from '../../interfaces/producto.interface';
 import { PlanPremium } from '../../interfaces/plan-premium.interface';
 import { CrearOrdenRequest } from '../../interfaces/payment.interface';
 import { Subscription } from 'rxjs';
+import { SessionNavComponent } from '../../molecules/session-nav/session-nav.component';
 
 @Component({
   selector: 'app-premium-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SessionNavComponent],
   templateUrl: './premium-page.component.html'
 })
 export class PremiumPageComponent implements OnInit, OnDestroy {
@@ -88,6 +89,15 @@ export class PremiumPageComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loadingPlanes = false;
+
+        if (err.status === 401) {
+          // Invitado sin sesión (o sesión vencida): el interceptor ya
+          // redirige a /login con el mensaje correcto. No es un error
+          // del sistema, así que no mostramos banner ni toast aquí.
+          this.cdr.detectChanges();
+          return;
+        }
+
         console.error('[premium-page] Error cargando planes:', err);
 
         if (err.status === 0) {

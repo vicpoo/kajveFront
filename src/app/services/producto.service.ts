@@ -8,16 +8,17 @@ import {
   ActualizarProductoRequest,
   FiltroCatalogo
 } from '../interfaces/producto.interface';
+import { PAGOS_BASE_URL } from '../core/api-config';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
   private http = inject(HttpClient);
 
-  // IMPORTANTE: este puerto debe coincidir EXACTAMENTE con el puerto real
-  // en el que está corriendo tu microservicio de Go (variable de entorno
-  // PORT). Si tu backend usa el default (8080) y aquí dice 8000, todas
-  // las peticiones fallarán con status 0 (sin respuesta del servidor).
-  private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
+  // Migrado al gateway centralizado (ver src/app/core/api-config.ts).
+  // Para revertir a la URL directa, comenta la línea de abajo y
+  // descomenta la línea vieja.
+  private readonly baseUrl = PAGOS_BASE_URL;
+  // private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
 
   // Catálogo público
   listarProductos(filtro?: FiltroCatalogo): Observable<Producto[]> {

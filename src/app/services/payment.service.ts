@@ -9,11 +9,17 @@ import {
   ListarOrdenesParams,
   OrdenConComprador
 } from '../interfaces/payment.interface';
+import { PAGOS_BASE_URL } from '../core/api-config';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
+
+  // Migrado al gateway centralizado (ver src/app/core/api-config.ts).
+  // Para revertir a la URL directa, comenta la línea de abajo y
+  // descomenta la línea vieja.
+  private readonly baseUrl = PAGOS_BASE_URL;
+  // private readonly baseUrl = 'https://servicio-pagos.dnc-ed-denz.shop';
 
   // Público - Crear orden de compra
   crearOrden(body: CrearOrdenRequest): Observable<CrearOrdenResponse> {

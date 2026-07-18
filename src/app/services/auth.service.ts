@@ -1,5 +1,5 @@
 // services/auth.service.ts - Corregido para SSR (Angular 21 / Vercel)
-import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
@@ -15,6 +15,11 @@ export class AuthService {
   private accessToken = signal<string | null>(null);
   private refreshToken = signal<string | null>(null);
   private user = signal<any | null>(null);
+
+  // Estado reactivo público para componentes compartidos (ej. header/nav)
+  // que necesitan re-renderizar cuando cambia la sesión sin recargar la página.
+  readonly isLoggedIn = computed(() => this.accessToken() !== null);
+  readonly loggedUser = computed(() => this.user());
 
   constructor() {
     // Solo se accede a localStorage si estamos en el navegador.
@@ -108,12 +113,22 @@ export class AuthService {
       return false;
     } catch (error) {
       console.error('Error refrescando token:', error);
-      this.logout();
+      // null: solo limpia la sesión, sin navegar. Quien llama a
+      // refreshAccessToken() (el interceptor) es responsable de decidir
+      // a dónde y con qué mensaje redirigir tras el fallo.
+      this.logout(null);
       return false;
     }
   }
 
-  logout(): void {
+  /**
+   * Limpia la sesión (signals + localStorage).
+   * @param redirectTo Ruta a la que navegar tras limpiar la sesión.
+   *   Por defecto '/login' (comportamiento histórico). Pasa `null` para
+   *   limpiar sin navegar (ej. cuando quien llama va a navegar por su cuenta
+   *   con query params/estado propio, como el interceptor).
+   */
+  logout(redirectTo: string | null = '/login'): void {
     this.accessToken.set(null);
     this.refreshToken.set(null);
     this.user.set(null);
@@ -124,6 +139,8 @@ export class AuthService {
       localStorage.removeItem('user');
     }
 
-    this.router.navigate(['/login']);
+    if (redirectTo !== null) {
+      this.router.navigate([redirectTo]);
+    }
   }
 }

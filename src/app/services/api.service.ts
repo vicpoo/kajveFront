@@ -12,14 +12,19 @@ import { Sensor, CreateSensorRequest, UpdateSensorRequest, SensorsListResponse, 
 import { PlanSuscripcion, MiSuscripcion, PagoPreferenciaRequest, PagoPreferenciaResponse, PagoHistorial } from '../interfaces/suscripcion.interface';
 import { Reporte, ReportesListResponse, GenerarReporteRequest } from '../interfaces/reporte.interface';
 import { AuditoriaListResponse } from '../interfaces/auditoria.interface';
+import { WEB_API_BASE_URL, WEB_ROOT_URL } from '../core/api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private http = inject(HttpClient);
-  
-  private baseUrl = 'https://api-web.dnc-ed-denz.shop/api/v1';
+
+  // Migrado al gateway centralizado (ver src/app/core/api-config.ts).
+  // Para revertir a la URL directa de api-web, comenta la línea de abajo
+  // y descomenta la línea vieja.
+  private baseUrl = WEB_API_BASE_URL;
+  // private baseUrl = 'https://api-web.dnc-ed-denz.shop/api/v1';
   private accessToken: string | null = null;
   private refreshTokenValue: string | null = null;
   private tokenSubject = new BehaviorSubject<string | null>(null);
@@ -488,8 +493,10 @@ export class ApiService {
    * Chequeo de salud del servicio (público)
    */
   healthCheck(): Observable<{ status: string; version: string; environment: string }> {
+    // /health no lleva /api/v1, por eso se construye contra WEB_ROOT_URL
+    // y no contra baseUrl. Para revertir, usa 'https://api-web.dnc-ed-denz.shop/health'.
     return this.http.get<{ status: string; version: string; environment: string }>(
-      `https://api-web.dnc-ed-denz.shop/health`
+      `${WEB_ROOT_URL}/health`
     ).pipe(catchError(this.handleError.bind(this)));
   }
 }

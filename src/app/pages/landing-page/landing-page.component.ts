@@ -2,11 +2,12 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { SessionNavComponent } from '../../molecules/session-nav/session-nav.component';
 
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SessionNavComponent],
   templateUrl: './landing-page.component.html'
 })
 export class LandingPageComponent {
