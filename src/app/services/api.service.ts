@@ -1,6 +1,6 @@
 // services/api.service.ts - Completo y corregido
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { LoginRequest, LoginResponse, RefreshRequest, RefreshResponse } from '../interfaces/auth.interface';
 import { User, CreateUserRequest, UpdateUserRequest, UpdateUserStateRequest, UsersListResponse, AdminUsersListResponse } from '../interfaces/user.interface';
 import { DashboardStats, SecadoStats, SensorStatusResponse } from '../interfaces/dashboard.interface';
-import { Sensor, CreateSensorRequest, UpdateSensorRequest, SensorsListResponse, QRResponse } from '../interfaces/sensor.interface';
+import { Sensor, CreateSensorRequest, UpdateSensorRequest, SensorsListResponse, QRResponse, LoteActual } from '../interfaces/sensor.interface';
 import { PlanSuscripcion, MiSuscripcion, PagoPreferenciaRequest, PagoPreferenciaResponse, PagoHistorial } from '../interfaces/suscripcion.interface';
 import { Reporte, ReportesListResponse, GenerarReporteRequest } from '../interfaces/reporte.interface';
 import { AuditoriaListResponse } from '../interfaces/auditoria.interface';
@@ -351,6 +351,37 @@ export class ApiService {
   getSensorQR(id: number): Observable<QRResponse> {
     return this.http.get<QRResponse>(`${this.baseUrl}/admin/sensores/${id}/qr`, {
       headers: this.getHeaders(true)
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
+  /**
+   * GET /api/v1/admin/sensores/{id}/lote-actual
+   * Obtiene el lote en_proceso que el trigger de BD crea automáticamente
+   * al registrar el sensor (requiere admin). Puede responder 404 con
+   * mensajes distintos ("Sensor no encontrado" / "No hay lote activo
+   * para este sensor"); handleError ya propaga el mensaje real del
+   * backend cuando viene en error.error.message, así que ambos casos
+   * llegan diferenciados a quien llame a este método.
+   */
+  getLoteActual(idSensor: number): Observable<LoteActual> {
+    return this.http.get<LoteActual>(`${this.baseUrl}/admin/sensores/${idSensor}/lote-actual`, {
+      headers: this.getHeaders(true)
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
+  /**
+   * GET /api/v1/admin/lotes/{id}/qr-imagen
+   * Descarga el PNG binario del QR de un lote (no JSON/base64). Se pide
+   * observe: 'response' para poder leer el nombre de archivo sugerido
+   * en el header Content-Disposition.
+   */
+  getLoteQrImagen(idLote: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.baseUrl}/admin/lotes/${idLote}/qr-imagen`, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.accessToken}`
+      }),
+      responseType: 'blob',
+      observe: 'response'
     }).pipe(catchError(this.handleError.bind(this)));
   }
 

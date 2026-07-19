@@ -2,7 +2,7 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ProductoService } from '../../services/producto.service';
 import { PaymentService } from '../../services/payment.service';
@@ -23,6 +23,7 @@ export class PremiumPageComponent implements OnInit, OnDestroy {
   private productoService = inject(ProductoService);
   private paymentService = inject(PaymentService);
   private authService = inject(AuthService);
+  private router = inject(Router);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
@@ -61,6 +62,16 @@ export class PremiumPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // El catálogo de suscripciones ya no responde 401 sin sesión (mismo
+    // cambio de gateway que libera /pagos/catalogo para el checkout de
+    // invitado en order-page), así que no podemos seguir dependiendo del
+    // 401 para forzar login aquí. Comprar premium sí requiere id_usuario,
+    // así que lo verificamos explícitamente antes de cargar nada.
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/premium' } });
+      return;
+    }
+
     this.idUsuarioActual = this.authService.getUser()?.id ?? null;
     this.precargarDatosComprador();
     this.cargarPlanes();

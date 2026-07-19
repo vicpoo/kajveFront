@@ -59,6 +59,10 @@ export const routes: Routes = [
       {
         path: 'estadisticas',
         loadComponent: () => import('./pages/admin-shell/stats-page.component').then((m) => m.StatsPageComponent)
+      },
+      {
+        path: 'sensores',
+        loadComponent: () => import('./pages/admin-shell/sensores-page.component').then((m) => m.SensoresPageComponent)
       }
     ]
   },

@@ -35,3 +35,10 @@ export interface SensorsListResponse {
 export interface QRResponse {
   qr_base64: string;
 }
+
+export interface LoteActual {
+  id_lote: number;
+  codigo_qr: string;
+  nombre_lote: string;
+  estado: string;
+}

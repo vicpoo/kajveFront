@@ -1,0 +1,126 @@
+<!-- sensores-page.component.html -->
+<section class="min-h-screen rounded-[40px] bg-[#F2E6D8] p-4 sm:p-6 md:p-10 text-[#3D2212] shadow-[0_20px_60px_rgba(107,58,35,0.12)]">
+  <!-- Header -->
+  <div class="mb-6">
+    <p class="text-sm uppercase tracking-[0.28em] text-[#7A3E24]/80 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#7A3E24]"></span> Administración
+    </p>
+    <h1 class="mt-2 text-3xl sm:text-4xl font-semibold text-[#3D2212]">📡 Registrar sensor</h1>
+    <p class="mt-1 text-sm text-[#5E3D2A]/80">Registra un sensor ESP32 y obtén automáticamente su lote y código QR</p>
+  </div>
+
+  <!-- Formulario de registro (oculto una vez que hay un sensor creado) -->
+  <div *ngIf="!sensorCreado" class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] mb-6">
+    <form (ngSubmit)="registrarSensor()" class="space-y-4 max-w-lg">
+
+      <!-- Selector de kit: solo referencia visual -->
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Kit / producto físico (referencia visual)</label>
+        <select [(ngModel)]="productoSeleccionadoId" name="productoSeleccionado" [disabled]="loadingCatalogo"
+                class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer disabled:opacity-50">
+          <option *ngIf="loadingCatalogo" [value]="null">Cargando catálogo...</option>
+          <option *ngIf="!loadingCatalogo && productos.length === 0" [value]="null">Sin kits disponibles</option>
+          <option *ngFor="let p of productos" [value]="p.id_producto">{{ p.nombre }} ({{ p.variedad }})</option>
+        </select>
+        <p class="mt-1 text-xs text-[#5E3D2A]/60">Solo para identificar visualmente qué kit estás registrando; no se envía al backend.</p>
+      </div>
+
+      <div class="border-t border-[#D7BBA4] pt-4 space-y-4">
+        <h4 class="font-medium text-[#3D2212] text-sm">Datos del sensor</h4>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Dirección MAC *</label>
+          <input type="text" [(ngModel)]="nuevoSensor.mac_address" name="macAddress"
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60 font-mono"
+                 required placeholder="AA:BB:CC:DD:EE:FF">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Tipo *</label>
+          <select [(ngModel)]="nuevoSensor.tipo" name="tipoSensor"
+                  class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer">
+            <option value="ambos">Ambos (temperatura y humedad)</option>
+            <option value="temperatura">Temperatura</option>
+            <option value="humedad">Humedad</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Modelo *</label>
+          <input type="text" [(ngModel)]="nuevoSensor.modelo" name="modeloSensor"
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 required placeholder="Ej: ESP32-DevKitC">
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="creandoSensor"
+              class="inline-flex items-center justify-center rounded-full bg-[#75341A] px-6 py-3.5 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg *ngIf="creandoSensor" class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ creandoSensor ? 'Registrando...' : 'Registrar sensor' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Resultado del flujo automático -->
+  <div *ngIf="sensorCreado" class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] mb-6 max-w-lg space-y-6">
+
+    <!-- Sensor creado -->
+    <div>
+      <h3 class="text-lg font-semibold text-[#3D2212] flex items-center gap-2">✅ Sensor registrado</h3>
+      <dl class="mt-2 text-sm text-[#5E3D2A] space-y-1">
+        <div class="flex justify-between"><dt>MAC</dt><dd class="font-mono">{{ sensorCreado.mac_address }}</dd></div>
+        <div class="flex justify-between"><dt>Modelo</dt><dd>{{ sensorCreado.modelo }}</dd></div>
+        <div class="flex justify-between"><dt>Tipo</dt><dd>{{ sensorCreado.tipo }}</dd></div>
+        <div class="flex justify-between"><dt>Estado</dt><dd>{{ sensorCreado.estado }}</dd></div>
+      </dl>
+    </div>
+
+    <!-- Cargando lote -->
+    <div *ngIf="cargandoLote" class="text-center text-[#5E3D2A] py-4">
+      <div class="inline-block animate-spin text-2xl mb-2">⟳</div>
+      <p class="text-sm">Obteniendo lote automático...</p>
+    </div>
+
+    <!-- Lote obtenido -->
+    <div *ngIf="loteActual && !cargandoLote" class="border-t border-[#D7BBA4] pt-4">
+      <h3 class="text-lg font-semibold text-[#3D2212] flex items-center gap-2">📦 Lote automático</h3>
+      <dl class="mt-2 text-sm text-[#5E3D2A] space-y-1">
+        <div class="flex justify-between"><dt>Nombre</dt><dd>{{ loteActual.nombre_lote }}</dd></div>
+        <div class="flex justify-between"><dt>ID lote</dt><dd>#{{ loteActual.id_lote }}</dd></div>
+        <div class="flex justify-between"><dt>Estado</dt><dd>{{ loteActual.estado }}</dd></div>
+        <div class="flex justify-between"><dt>Código QR</dt><dd class="font-mono">{{ loteActual.codigo_qr }}</dd></div>
+      </dl>
+    </div>
+
+    <!-- Cargando QR -->
+    <div *ngIf="cargandoQr" class="text-center text-[#5E3D2A] py-4">
+      <div class="inline-block animate-spin text-2xl mb-2">⟳</div>
+      <p class="text-sm">Obteniendo imagen del QR...</p>
+    </div>
+
+    <!-- QR listo -->
+    <div *ngIf="qrObjectUrl && !cargandoQr" class="border-t border-[#D7BBA4] pt-4 text-center">
+      <h3 class="text-lg font-semibold text-[#3D2212] mb-3">🔳 Código QR</h3>
+      <img [src]="qrObjectUrl" alt="Código QR del lote" class="mx-auto rounded-2xl border border-[#D7BBA4] max-w-[240px]">
+      <button (click)="descargarQr()"
+              class="mt-4 inline-flex items-center justify-center rounded-full bg-[#7A3E24] px-6 py-3 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5F2E19] hover:shadow-lg hover:scale-105">
+        ⬇️ Descargar QR
+      </button>
+    </div>
+
+    <div class="border-t border-[#D7BBA4] pt-4">
+      <button (click)="registrarOtroSensor()"
+              class="w-full rounded-full border-2 border-[#C9B29B] bg-white px-6 py-3 text-sm font-semibold text-[#7A3E24] transition-all duration-300 hover:bg-[#F8EEE2] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+        Registrar otro sensor
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="max-w-lg rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    ⚠️ {{ errorMessage }}
+  </div>
+</section>

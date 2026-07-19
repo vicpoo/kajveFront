@@ -1,7 +1,7 @@
 //src/app/services/sensor.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
-import { Sensor, CreateSensorRequest, UpdateSensorRequest } from '../interfaces/sensor.interface';
+import { Sensor, CreateSensorRequest, UpdateSensorRequest, LoteActual } from '../interfaces/sensor.interface';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
@@ -95,5 +95,43 @@ export class SensorService {
       console.error('Error generando QR:', error);
       throw error;
     }
+  }
+
+  /**
+   * Obtiene el lote en_proceso creado automáticamente (por el trigger de BD)
+   * al registrar un sensor.
+   */
+  async getLoteActual(idSensor: number): Promise<LoteActual> {
+    try {
+      return await lastValueFrom(this.apiService.getLoteActual(idSensor));
+    } catch (error) {
+      console.error('Error obteniendo lote actual del sensor:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Descarga la imagen PNG del QR de un lote. Devuelve el blob y el nombre
+   * de archivo sugerido por el header Content-Disposition (con fallback
+   * al patrón documentado lote_{id}_qr.png si el header no está expuesto
+   * por CORS).
+   */
+  async getLoteQrImagen(idLote: number): Promise<{ blob: Blob; filename: string }> {
+    try {
+      const response = await lastValueFrom(this.apiService.getLoteQrImagen(idLote));
+      const blob = response.body as Blob;
+      const filename = this.extraerNombreArchivo(response.headers.get('Content-Disposition'))
+        || `lote_${idLote}_qr.png`;
+      return { blob, filename };
+    } catch (error) {
+      console.error('Error obteniendo QR del lote:', error);
+      throw error;
+    }
+  }
+
+  private extraerNombreArchivo(contentDisposition: string | null): string | null {
+    if (!contentDisposition) return null;
+    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    return match ? match[1] : null;
   }
 }
