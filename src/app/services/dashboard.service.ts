@@ -85,7 +85,15 @@ export class DashboardService {
   }
 
   /**
-   * Carga todos los datos del dashboard en paralelo
+   * Carga todos los datos del dashboard en paralelo.
+   *
+   * Usa Promise.allSettled en vez de Promise.all: antes, si UN solo
+   * endpoint fallaba (ej. /estadisticas/secado con 500), Promise.all
+   * rechazaba de inmediato y se perdían también los resultados de los
+   * otros 3 endpoints aunque hubieran respondido bien — el dashboard se
+   * quedaba completamente sin datos por un solo fallo aislado. Con
+   * allSettled, cada endpoint que sí responde se pinta normal y solo el
+   * que falla se queda en null (silencioso, no rompe la vista).
    */
   async loadAllDashboardData(): Promise<{
     dashboard: DashboardStats | null;
@@ -95,27 +103,29 @@ export class DashboardService {
   }> {
     this.isLoading.set(true);
     try {
-      const [dashboard, secado, sensores, usuarios] = await Promise.all([
+      const [dashboardR, secadoR, sensoresR, usuariosR] = await Promise.allSettled([
         lastValueFrom(this.apiService.getDashboardStats()),
         lastValueFrom(this.apiService.getSecadoStats()),
         lastValueFrom(this.apiService.getSensoresStatus()),
         lastValueFrom(this.apiService.getUsuariosEstadisticas(30))
       ]);
 
-      this.dashboardStats.set(dashboard || null);
-      this.secadoStats.set(secado || null);
-      this.sensorStatus.set(sensores || null);
-      this.usuariosEstadisticas.set(usuarios || null);
+      const dashboard = dashboardR.status === 'fulfilled' ? (dashboardR.value ?? null) : null;
+      const secado = secadoR.status === 'fulfilled' ? (secadoR.value ?? null) : null;
+      const sensores = sensoresR.status === 'fulfilled' ? (sensoresR.value ?? null) : null;
+      const usuarios = usuariosR.status === 'fulfilled' ? (usuariosR.value ?? null) : null;
 
-      return {
-        dashboard: dashboard || null,
-        secado: secado || null,
-        sensores: sensores || null,
-        usuarios: usuarios || null
-      };
-    } catch (error) {
-      console.error('Error cargando datos del dashboard:', error);
-      throw error;
+      if (dashboardR.status === 'rejected') console.error('Error cargando /admin/dashboard:', dashboardR.reason);
+      if (secadoR.status === 'rejected') console.error('Error cargando /admin/estadisticas/secado:', secadoR.reason);
+      if (sensoresR.status === 'rejected') console.error('Error cargando /admin/estadisticas/sensores:', sensoresR.reason);
+      if (usuariosR.status === 'rejected') console.error('Error cargando /admin/estadisticas/usuarios:', usuariosR.reason);
+
+      this.dashboardStats.set(dashboard);
+      this.secadoStats.set(secado);
+      this.sensorStatus.set(sensores);
+      this.usuariosEstadisticas.set(usuarios);
+
+      return { dashboard, secado, sensores, usuarios };
     } finally {
       this.isLoading.set(false);
     }

@@ -54,11 +54,20 @@ export class StatsPageComponent implements OnInit {
   }
 
   async loadDashboardData() {
+    // Promise.allSettled: si /admin/estadisticas/secado (u otro endpoint)
+    // falla, igual queremos pintar los pasteles de usuarios con lo que sí
+    // llegó, en vez de dejar toda la vista sin datos.
+    const [dashboardR, usuariosR] = await Promise.allSettled([
+      this.dashboardService.loadDashboardStats().then(() => this.dashboardService.dashboardStats()),
+      this.dashboardService.loadUsuariosEstadisticas(30)
+    ]);
+
     try {
-      const [dashboardStats, usuariosStats] = await Promise.all([
-        this.dashboardService.loadDashboardStats().then(() => this.dashboardService.dashboardStats()),
-        this.dashboardService.loadUsuariosEstadisticas(30)
-      ]);
+      const dashboardStats = dashboardR.status === 'fulfilled' ? dashboardR.value : null;
+      const usuariosStats = usuariosR.status === 'fulfilled' ? usuariosR.value : null;
+
+      if (dashboardR.status === 'rejected') console.error('Error cargando dashboard stats:', dashboardR.reason);
+      if (usuariosR.status === 'rejected') console.error('Error cargando estadísticas de usuarios:', usuariosR.reason);
 
       if (dashboardStats) {
         this.stats.set([
