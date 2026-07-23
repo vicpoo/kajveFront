@@ -31,9 +31,13 @@
         <div *ngIf="!isLoading() && chartBars().length === 0" class="flex h-48 items-center justify-center text-sm text-[#5E3D2A]/70">
           Sin registros nuevos en este período.
         </div>
-        <div *ngIf="chartBars().length > 0" class="flex h-48 items-end gap-2 sm:gap-4">
-          <div *ngFor="let bar of chartBars()" class="flex-1" [title]="bar.cantidad + ' usuario(s)'">
-            <div class="mx-auto h-full w-full rounded-full bg-[#E3D2BC] transition-all duration-300 hover:bg-[#D7BBA4]" [style.height.%]="bar.value"></div>
+        <div *ngIf="chartBars().length > 0" class="flex items-end gap-2 sm:gap-4">
+          <div *ngFor="let bar of chartBars()" class="flex-1 flex flex-col items-center" [title]="bar.cantidad + ' usuario(s)'">
+            <!-- Zona de altura FIJA en px (no depende de que el padre haga stretch,
+                 por eso ya no se usa height:% aquí, ver dashboard-page.component.ts) -->
+            <div class="w-full flex items-end justify-center" [style.height.px]="ALTO_ZONA_BARRAS_PX">
+              <div class="w-full max-w-[28px] rounded-full bg-[#E3D2BC] transition-all duration-300 hover:bg-[#D7BBA4]" [style.height.px]="bar.heightPx"></div>
+            </div>
             <p class="mt-3 text-center text-[10px] sm:text-sm text-[#5E3D2A]">{{ bar.label }}</p>
           </div>
         </div>

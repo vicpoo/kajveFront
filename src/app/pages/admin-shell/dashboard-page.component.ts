@@ -21,9 +21,15 @@ export class DashboardPageComponent implements OnInit {
   ]);
 
   // Barras de usuarios registrados por día (últimos 14 días), con datos reales
-  // del endpoint /admin/estadisticas/usuarios. El % de altura se normaliza
-  // contra el día con más registros de la ventana.
-  chartBars = signal<{ label: string; value: number; cantidad: number }[]>([]);
+  // del endpoint /admin/estadisticas/usuarios. Se usa una altura en PÍXELES
+  // (no %) a propósito: la columna donde vive cada barra es un flex item
+  // dentro de un contenedor con `items-end`, así que no tiene una altura
+  // definida (no hace stretch) — un `height: %` ahí se resuelve contra un
+  // padre sin alto fijo y colapsa a 0, dejando la barra invisible aunque sí
+  // haya datos. Con píxeles fijos (contra la zona de barra de altura fija,
+  // ver template) el problema desaparece.
+  readonly ALTO_ZONA_BARRAS_PX = 160;
+  chartBars = signal<{ label: string; heightPx: number; cantidad: number }[]>([]);
 
   isLoading = signal(true);
 
@@ -85,7 +91,7 @@ export class DashboardPageComponent implements OnInit {
         this.chartBars.set(
           ultimosDias.map(d => ({
             label: new Date(d.fecha + 'T00:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit' }),
-            value: Math.max(4, Math.round((d.cantidad / maxCantidad) * 100)),
+            heightPx: Math.max(6, Math.round((d.cantidad / maxCantidad) * this.ALTO_ZONA_BARRAS_PX)),
             cantidad: d.cantidad
           }))
         );
