@@ -1,7 +1,7 @@
 //src/app/services/sensor.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
-import { Sensor, CreateSensorRequest, UpdateSensorRequest, LoteActual } from '../interfaces/sensor.interface';
+import { Sensor, CreateSensorRequest, UpdateSensorRequest, LoteActual, AltaDirectaSensorRequest, AltaDirectaSensorResponse } from '../interfaces/sensor.interface';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
@@ -48,6 +48,24 @@ export class SensorService {
       return sensor;
     } catch (error) {
       console.error('Error creando sensor:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Da de alta un ESP32 por su identificador (no necesariamente formato MAC,
+   * ej. "kajve-D8463591") y lo asigna de inmediato a un usuario real.
+   */
+  async altaDirectaSensor(data: AltaDirectaSensorRequest): Promise<AltaDirectaSensorResponse> {
+    try {
+      const resultado = await lastValueFrom(this.apiService.altaDirectaSensor(data));
+      const sensores = this.sensores();
+      sensores.push(resultado.sensor);
+      this.sensores.set(sensores);
+      this.totalSensores.set(this.totalSensores() + 1);
+      return resultado;
+    } catch (error) {
+      console.error('Error en alta directa de sensor:', error);
       throw error;
     }
   }

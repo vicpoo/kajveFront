@@ -162,10 +162,27 @@
                  igual, pero el backend NO la marca 'pagada' hasta que
                  Stripe confirma el dinero (puede tardar hasta 4 días
                  hábiles). Mientras tanto la orden queda 'pendiente'. -->
-            <div class="rounded-xl bg-[#F2E3D2]/60 border border-[#D7BBA4]/40 px-4 py-3 text-xs text-[#5E3D2A] space-y-1">
-              <p class="font-semibold text-[#3D2212]">Métodos de pago disponibles en Stripe:</p>
-              <p>💳 Tarjeta — confirmación inmediata · 🏪 OXXO (efectivo) — hasta 4 días hábiles · 🏦 Transferencia SPEI — 1 a 3 días hábiles</p>
-              <p>Si pagas en OXXO o por transferencia, tu pedido queda como <span class="font-semibold">pendiente</span> hasta que Stripe confirme el pago.</p>
+            <div class="rounded-xl bg-[#F2E3D2]/60 border border-[#D7BBA4]/40 px-5 py-4">
+              <p class="text-[11px] font-semibold text-[#3D2212] uppercase tracking-widest mb-3">
+                Métodos de pago disponibles
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-0">
+                <div class="sm:pr-4">
+                  <p class="text-sm font-semibold text-[#3D2212]">Tarjeta</p>
+                  <p class="text-xs text-[#5E3D2A]/70 mt-0.5">Activación inmediata</p>
+                </div>
+                <div class="sm:px-4 sm:border-l sm:border-[#D7BBA4]/60">
+                  <p class="text-sm font-semibold text-[#3D2212]">OXXO</p>
+                  <p class="text-xs text-[#5E3D2A]/70 mt-0.5">Hasta 4 días hábiles</p>
+                </div>
+                <div class="sm:pl-4 sm:border-l sm:border-[#D7BBA4]/60">
+                  <p class="text-sm font-semibold text-[#3D2212]">Transferencia SPEI</p>
+                  <p class="text-xs text-[#5E3D2A]/70 mt-0.5">1 a 3 días hábiles</p>
+                </div>
+              </div>
+              <p class="text-xs text-[#5E3D2A]/70 leading-relaxed border-t border-[#D7BBA4]/50 mt-3 pt-3">
+                Con OXXO o transferencia, tu pedido queda pendiente y se confirma automáticamente en cuanto Stripe reciba el pago.
+              </p>
             </div>
             <button type="submit" [disabled]="loading || !productoSeleccionadoId"
                     class="w-full bg-[#7A3E24] text-white py-4 rounded-xl font-semibold hover:bg-[#5F2E19] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-lg">

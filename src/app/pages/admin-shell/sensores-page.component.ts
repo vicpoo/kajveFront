@@ -5,8 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { SensorService } from '../../services/sensor.service';
 import { ProductoService } from '../../services/producto.service';
-import { Sensor, CreateSensorRequest, LoteActual } from '../../interfaces/sensor.interface';
+import { UserService } from '../../services/user.service';
+import { Sensor, CreateSensorRequest, LoteActual, AltaDirectaSensorRequest } from '../../interfaces/sensor.interface';
 import { Producto } from '../../interfaces/producto.interface';
+import { User } from '../../interfaces/user.interface';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,6 +20,7 @@ import { Subscription } from 'rxjs';
 export class SensoresPageComponent implements OnInit, OnDestroy {
   private sensorService = inject(SensorService);
   private productoService = inject(ProductoService);
+  private userService = inject(UserService);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -28,7 +31,12 @@ export class SensoresPageComponent implements OnInit, OnDestroy {
   loadingCatalogo = true;
   productoSeleccionadoId: number | null = null;
 
-  // Formulario de registro
+  // Modo de alta: registro estándar (queda "sin vincular" hasta reclamar
+  // por QR) o alta directa (se asigna a un usuario real de inmediato,
+  // usando un identificador propio del ESP32 en vez de una MAC estándar)
+  modoAlta: 'estandar' | 'directa' = 'estandar';
+
+  // Formulario de registro estándar
   nuevoSensor: CreateSensorRequest = {
     mac_address: '',
     tipo: 'ambos',
@@ -36,6 +44,23 @@ export class SensoresPageComponent implements OnInit, OnDestroy {
   };
   creandoSensor = false;
   errorMessage = '';
+
+  // Formulario de alta directa
+  productoresDisponibles: User[] = [];
+  cargandoProductores = false;
+  altaDirecta: AltaDirectaSensorRequest = {
+    identificador: '',
+    id_usuario: 0,
+    tipo: 'ambos',
+    modelo: '',
+    mide_viento: false,
+    mide_radiacion: false,
+    mide_humedad_grano: true,
+    nombre_lote: '',
+    variedad: 'arabica',
+    tipo_proceso: 'natural',
+    ubicacion: ''
+  };
 
   // Resultado del flujo automático
   sensorCreado: Sensor | null = null;
@@ -48,6 +73,25 @@ export class SensoresPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.cargarCatalogo();
+    this.cargarProductores();
+  }
+
+  async cargarProductores() {
+    this.cargandoProductores = true;
+    try {
+      await this.userService.loadAdminUsers('productor', 'activo', 1, 100);
+      this.productoresDisponibles = this.userService.users();
+    } catch (err) {
+      console.error('Error cargando productores:', err);
+    } finally {
+      this.cargandoProductores = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  cambiarModoAlta(modo: 'estandar' | 'directa') {
+    this.modoAlta = modo;
+    this.errorMessage = '';
   }
 
   ngOnDestroy() {
@@ -117,6 +161,54 @@ export class SensoresPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  async registrarAltaDirecta() {
+    const identificador = this.altaDirecta.identificador?.trim() || '';
+
+    if (identificador.length < 3) {
+      this.errorMessage = 'El identificador del ESP32 debe tener al menos 3 caracteres (ej. kajve-D8463591).';
+      this.toastr.error('Identificador inválido');
+      return;
+    }
+    if (!this.altaDirecta.id_usuario) {
+      this.errorMessage = 'Selecciona el usuario al que se asignará este sensor.';
+      this.toastr.error('Falta seleccionar el usuario');
+      return;
+    }
+
+    this.creandoSensor = true;
+    this.errorMessage = '';
+
+    try {
+      const resultado = await this.sensorService.altaDirectaSensor({
+        ...this.altaDirecta,
+        identificador,
+        modelo: this.altaDirecta.modelo?.trim() || undefined,
+        nombre_lote: this.altaDirecta.nombre_lote?.trim() || undefined,
+        ubicacion: this.altaDirecta.ubicacion?.trim() || undefined
+      });
+
+      this.sensorCreado = resultado.sensor;
+      this.loteActual = {
+        id_lote: resultado.id_lote,
+        codigo_qr: resultado.codigo_qr || '',
+        nombre_lote: resultado.nombre_lote || '',
+        estado: resultado.estado_lote
+      };
+      this.toastr.success(`Sensor "${identificador}" dado de alta y asignado correctamente`);
+      this.creandoSensor = false;
+      this.cdr.detectChanges();
+
+      await this.cargarQr(resultado.id_lote);
+    } catch (err) {
+      this.creandoSensor = false;
+      const mensaje = this.extraerMensajeError(err);
+      this.errorMessage = mensaje;
+      this.toastr.error('Error en alta directa: ' + mensaje);
+      console.error('Error en alta directa de sensor:', err);
+      this.cdr.detectChanges();
+    }
+  }
+
   private async cargarLoteAutomatico(idSensor: number) {
     this.cargandoLote = true;
     try {
@@ -176,6 +268,19 @@ export class SensoresPageComponent implements OnInit, OnDestroy {
     this.liberarQrObjectUrl();
     this.errorMessage = '';
     this.nuevoSensor = { mac_address: '', tipo: 'ambos', modelo: '' };
+    this.altaDirecta = {
+      identificador: '',
+      id_usuario: 0,
+      tipo: 'ambos',
+      modelo: '',
+      mide_viento: false,
+      mide_radiacion: false,
+      mide_humedad_grano: true,
+      nombre_lote: '',
+      variedad: 'arabica',
+      tipo_proceso: 'natural',
+      ubicacion: ''
+    };
   }
 
   private liberarQrObjectUrl() {

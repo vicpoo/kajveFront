@@ -1,6 +1,8 @@
 export interface DashboardStats {
   total_usuarios: number;
   usuarios_activos: number;
+  total_productores: number;
+  total_usuarios_premium: number;
   total_sensores: number;
   sensores_activos: number;
   sensores_mantenimiento: number;
@@ -11,6 +13,17 @@ export interface DashboardStats {
   alertas_criticas_sin_atender: number;
   total_inferencias_ml: number;
   lecturas_ultimas_24h: number;
+}
+
+export interface UsuariosPorDia {
+  fecha: string;
+  cantidad: number;
+}
+
+export interface UsuariosEstadisticas {
+  serie_tiempo: UsuariosPorDia[];
+  premium_vs_normal: { premium: number; normal: number };
+  roles: { productor: number; administrador: number };
 }
 
 export interface SecadoStats {

@@ -15,16 +15,37 @@
     </div>
   </div>
 
-  <div class="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+  <div class="mt-10 grid gap-6 lg:grid-cols-2">
     <div class="rounded-[32px] bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/80">
-      <h2 class="text-xl font-semibold text-[#3D2212]">Gráfica de crecimiento</h2>
-      <div class="mt-8 h-60 rounded-[32px] bg-[#F8EEE2]"></div>
+      <h2 class="text-xl font-semibold text-[#3D2212]">Usuarios premium vs normales</h2>
+      <div class="mt-8 flex flex-col sm:flex-row items-center gap-6">
+        <div class="h-48 w-48 rounded-full shrink-0" [style.background]="premiumPieGradient()"></div>
+        <div class="space-y-3 w-full">
+          <div *ngFor="let slice of premiumPie()" class="flex items-center justify-between text-sm">
+            <span class="flex items-center gap-2 text-[#5E3D2A]">
+              <span class="w-3 h-3 rounded-full inline-block" [style.background]="slice.color"></span>
+              {{ slice.label }}
+            </span>
+            <span class="font-semibold text-[#3D2212]">{{ slice.value }} · {{ (slice.pct * 100) | number:'1.0-0' }}%</span>
+          </div>
+          <p *ngIf="premiumPie().length === 0" class="text-sm text-[#5E3D2A]/70">Cargando datos...</p>
+        </div>
+      </div>
     </div>
     <div class="rounded-[32px] bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] border border-[#D7BBA4]/80">
-      <h2 class="text-xl font-semibold text-[#3D2212]">Acciones</h2>
-      <div class="mt-6 space-y-4 text-sm leading-6 text-[#5E3D2A]/85">
-        <p>Descarga informes con un clic.</p>
-        <p>Observa las métricas principales de tus usuarios y pedidos.</p>
+      <h2 class="text-xl font-semibold text-[#3D2212]">Productores vs administradores</h2>
+      <div class="mt-8 flex flex-col sm:flex-row items-center gap-6">
+        <div class="h-48 w-48 rounded-full shrink-0" [style.background]="rolesPieGradient()"></div>
+        <div class="space-y-3 w-full">
+          <div *ngFor="let slice of rolesPie()" class="flex items-center justify-between text-sm">
+            <span class="flex items-center gap-2 text-[#5E3D2A]">
+              <span class="w-3 h-3 rounded-full inline-block" [style.background]="slice.color"></span>
+              {{ slice.label }}
+            </span>
+            <span class="font-semibold text-[#3D2212]">{{ slice.value }} · {{ (slice.pct * 100) | number:'1.0-0' }}%</span>
+          </div>
+          <p *ngIf="rolesPie().length === 0" class="text-sm text-[#5E3D2A]/70">Cargando datos...</p>
+        </div>
       </div>
     </div>
   </div>

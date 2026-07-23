@@ -177,7 +177,7 @@ export class UsersPageComponent implements OnInit {
     // window no existe en el servidor durante SSR/prerender
     if (!this.isBrowser) return;
 
-    const confirmed = window.confirm('⚠️ ¿Deseas eliminar este usuario? Esta acción no se puede deshacer.');
+    const confirmed = window.confirm('⚠️ Esto eliminará al usuario de forma PERMANENTE (no solo lo desactiva). Esta acción no se puede deshacer. ¿Continuar?');
     if (!confirmed) {
       return;
     }

@@ -7,8 +7,8 @@ import { catchError, tap } from 'rxjs/operators';
 // Interfaces
 import { LoginRequest, LoginResponse, RefreshRequest, RefreshResponse } from '../interfaces/auth.interface';
 import { User, CreateUserRequest, UpdateUserRequest, UpdateUserStateRequest, UsersListResponse, AdminUsersListResponse } from '../interfaces/user.interface';
-import { DashboardStats, SecadoStats, SensorStatusResponse } from '../interfaces/dashboard.interface';
-import { Sensor, CreateSensorRequest, UpdateSensorRequest, SensorsListResponse, QRResponse, LoteActual } from '../interfaces/sensor.interface';
+import { DashboardStats, SecadoStats, SensorStatusResponse, UsuariosEstadisticas } from '../interfaces/dashboard.interface';
+import { Sensor, CreateSensorRequest, UpdateSensorRequest, SensorsListResponse, QRResponse, LoteActual, AltaDirectaSensorRequest, AltaDirectaSensorResponse } from '../interfaces/sensor.interface';
 import { PlanSuscripcion, MiSuscripcion, PagoPreferenciaRequest, PagoPreferenciaResponse, PagoHistorial } from '../interfaces/suscripcion.interface';
 import { Reporte, ReportesListResponse, GenerarReporteRequest } from '../interfaces/reporte.interface';
 import { AuditoriaListResponse } from '../interfaces/auditoria.interface';
@@ -298,6 +298,18 @@ export class ApiService {
     }).pipe(catchError(this.handleError.bind(this)));
   }
 
+  /**
+   * GET /api/v1/admin/estadisticas/usuarios
+   * Serie de tiempo de usuarios registrados + premium vs normal (requiere admin)
+   */
+  getUsuariosEstadisticas(dias: number = 30): Observable<UsuariosEstadisticas> {
+    const params = new HttpParams().set('dias', dias.toString());
+    return this.http.get<UsuariosEstadisticas>(`${this.baseUrl}/admin/estadisticas/usuarios`, {
+      headers: this.getHeaders(true),
+      params
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
   // ==================== SENSORES ENDPOINTS ====================
 
   /**
@@ -320,6 +332,18 @@ export class ApiService {
    */
   createSensor(sensorData: CreateSensorRequest): Observable<Sensor> {
     return this.http.post<Sensor>(`${this.baseUrl}/admin/sensores`, sensorData, {
+      headers: this.getHeaders(true)
+    }).pipe(catchError(this.handleError.bind(this)));
+  }
+
+  /**
+   * POST /api/v1/admin/sensores/alta-directa
+   * Da de alta un ESP32 por su identificador (no necesariamente formato MAC,
+   * ej. "kajve-D8463591") y lo asigna de inmediato a un usuario real, sin
+   * pasar por el flujo de "sin vincular" + reclamar por QR (requiere admin)
+   */
+  altaDirectaSensor(data: AltaDirectaSensorRequest): Observable<AltaDirectaSensorResponse> {
+    return this.http.post<AltaDirectaSensorResponse>(`${this.baseUrl}/admin/sensores/alta-directa`, data, {
       headers: this.getHeaders(true)
     }).pipe(catchError(this.handleError.bind(this)));
   }

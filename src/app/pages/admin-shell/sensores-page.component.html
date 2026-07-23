@@ -9,8 +9,27 @@
     <p class="mt-1 text-sm text-[#5E3D2A]/80">Registra un sensor ESP32 y obtén automáticamente su lote y código QR</p>
   </div>
 
-  <!-- Formulario de registro (oculto una vez que hay un sensor creado) -->
-  <div *ngIf="!sensorCreado" class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] mb-6">
+  <!-- Selector de modo de alta -->
+  <div *ngIf="!sensorCreado" class="mb-6 inline-flex rounded-full border border-[#D7BBA4]/80 bg-white p-1 shadow-[0_10px_30px_rgba(107,58,35,0.08)]">
+    <button type="button" (click)="cambiarModoAlta('estandar')"
+            class="rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200"
+            [class.bg-[#75341A]]="modoAlta === 'estandar'"
+            [class.text-[#F2E6D8]]="modoAlta === 'estandar'"
+            [class.text-[#7A3E24]]="modoAlta !== 'estandar'">
+      Registro estándar (QR)
+    </button>
+    <button type="button" (click)="cambiarModoAlta('directa')"
+            class="rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200"
+            [class.bg-[#75341A]]="modoAlta === 'directa'"
+            [class.text-[#F2E6D8]]="modoAlta === 'directa'"
+            [class.text-[#7A3E24]]="modoAlta !== 'directa'">
+      Alta directa (asignar a usuario)
+    </button>
+  </div>
+
+  <!-- Formulario de registro estándar (oculto una vez que hay un sensor creado) -->
+  <div *ngIf="!sensorCreado && modoAlta === 'estandar'" class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] mb-6">
+    <p class="text-sm text-[#5E3D2A]/80 mb-4">El sensor queda "sin vincular" hasta que alguien lo reclame escaneando el código QR desde la app.</p>
     <form (ngSubmit)="registrarSensor()" class="space-y-4 max-w-lg">
 
       <!-- Selector de kit: solo referencia visual -->
@@ -60,6 +79,106 @@
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         {{ creandoSensor ? 'Registrando...' : 'Registrar sensor' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Formulario de alta directa: ESP32 con ID propio, asignado ya a un usuario -->
+  <div *ngIf="!sensorCreado && modoAlta === 'directa'" class="rounded-[32px] border border-[#D7BBA4]/80 bg-white p-6 shadow-[0_20px_60px_rgba(107,58,35,0.12)] mb-6">
+    <p class="text-sm text-[#5E3D2A]/80 mb-4">Da de alta un ESP32 con su propio identificador (no requiere formato de MAC, ej. <span class="font-mono">kajve-D8463591</span>) y asígnalo de inmediato a un usuario, sin pasar por el reclamo por QR.</p>
+    <form (ngSubmit)="registrarAltaDirecta()" class="space-y-4 max-w-lg">
+
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Identificador del ESP32 *</label>
+        <input type="text" [(ngModel)]="altaDirecta.identificador" name="identificadorEsp32"
+               class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60 font-mono"
+               required placeholder="kajve-D8463591">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Usuario al que se asigna *</label>
+        <select [(ngModel)]="altaDirecta.id_usuario" name="idUsuarioAsignado" [disabled]="cargandoProductores"
+                class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer disabled:opacity-50">
+          <option [ngValue]="0" disabled>{{ cargandoProductores ? 'Cargando usuarios...' : 'Selecciona un usuario' }}</option>
+          <option *ngFor="let u of productoresDisponibles" [ngValue]="u.id_usuario">{{ u.nombre }} ({{ u.email }})</option>
+        </select>
+        <p *ngIf="!cargandoProductores && productoresDisponibles.length === 0" class="mt-1 text-xs text-amber-700">No hay productores activos disponibles.</p>
+      </div>
+
+      <div class="border-t border-[#D7BBA4] pt-4 space-y-4">
+        <h4 class="font-medium text-[#3D2212] text-sm">Datos del sensor</h4>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Tipo *</label>
+          <select [(ngModel)]="altaDirecta.tipo" name="tipoAltaDirecta"
+                  class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 appearance-none cursor-pointer">
+            <option value="ambos">Ambos (temperatura y humedad)</option>
+            <option value="temperatura">Temperatura</option>
+            <option value="humedad">Humedad</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Modelo</label>
+          <input type="text" [(ngModel)]="altaDirecta.modelo" name="modeloAltaDirecta"
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 placeholder="Ej: ESP32-DevKitC">
+        </div>
+
+        <div class="flex flex-wrap gap-4">
+          <label class="flex items-center gap-2 text-sm text-[#5E3D2A]">
+            <input type="checkbox" [(ngModel)]="altaDirecta.mide_humedad_grano" name="mideHumedadGrano" class="rounded border-[#C9B29B] text-[#7A3E24] focus:ring-[#7A3E24]/20">
+            Mide humedad de grano
+          </label>
+          <label class="flex items-center gap-2 text-sm text-[#5E3D2A]">
+            <input type="checkbox" [(ngModel)]="altaDirecta.mide_viento" name="mideViento" class="rounded border-[#C9B29B] text-[#7A3E24] focus:ring-[#7A3E24]/20">
+            Mide viento
+          </label>
+          <label class="flex items-center gap-2 text-sm text-[#5E3D2A]">
+            <input type="checkbox" [(ngModel)]="altaDirecta.mide_radiacion" name="mideRadiacion" class="rounded border-[#C9B29B] text-[#7A3E24] focus:ring-[#7A3E24]/20">
+            Mide radiación
+          </label>
+        </div>
+      </div>
+
+      <div class="border-t border-[#D7BBA4] pt-4 space-y-4">
+        <h4 class="font-medium text-[#3D2212] text-sm">Datos del lote asignado</h4>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Nombre del lote</label>
+          <input type="text" [(ngModel)]="altaDirecta.nombre_lote" name="nombreLoteDirecta"
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 placeholder="Se genera automático si se deja vacío">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Variedad</label>
+            <input type="text" [(ngModel)]="altaDirecta.variedad" name="variedadDirecta"
+                   class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Proceso</label>
+            <input type="text" [(ngModel)]="altaDirecta.tipo_proceso" name="procesoDirecta"
+                   class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#5E3D2A] mb-1.5">Ubicación</label>
+          <input type="text" [(ngModel)]="altaDirecta.ubicacion" name="ubicacionDirecta"
+                 class="w-full rounded-2xl border border-[#C9B29B] bg-[#F8EEE2] px-4 py-3 text-[#3D2212] outline-none transition-all duration-200 focus:border-[#7A3E24] focus:ring-2 focus:ring-[#7A3E24]/20 placeholder:text-[#C9B29B]/60"
+                 placeholder="Ej: Chiapas">
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="creandoSensor"
+              class="inline-flex items-center justify-center rounded-full bg-[#75341A] px-6 py-3.5 text-sm font-semibold text-[#F2E6D8] transition-all duration-300 hover:bg-[#5e2b16] hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg *ngIf="creandoSensor" class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ creandoSensor ? 'Dando de alta...' : 'Dar de alta y asignar' }}
       </button>
     </form>
   </div>

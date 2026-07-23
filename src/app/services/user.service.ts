@@ -86,18 +86,15 @@ export class UserService {
   }
 
   /**
-   * Elimina un usuario (desactiva lógicamente)
+   * Elimina un usuario de forma permanente (borrado físico en BD)
    */
   async deleteUser(id: number): Promise<{ message: string; id_usuario: number }> {
     try {
       const response = await lastValueFrom(this.apiService.deleteUser(id));
-      // Actualizar lista local - marcar como inactivo
-      const users = this.users();
-      const index = users.findIndex(u => u.id_usuario === id);
-      if (index !== -1) {
-        users[index].estado = 'inactivo';
-        this.users.set(users);
-      }
+      // Quitarlo de la lista local: ya no existe en BD, no solo se desactivó
+      const users = this.users().filter(u => u.id_usuario !== id);
+      this.users.set(users);
+      this.totalUsers.set(users.length);
       return response;
     } catch (error) {
       console.error('Error eliminando usuario:', error);
